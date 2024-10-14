@@ -10,6 +10,6 @@ public class Application {
     private static final EntityManagerFactory emf = Persistence.createEntityManagerFactory("azienda-trasporti");
     private static final Faker faker = new Faker(Locale.US);
     public static void main(String[] args) {
-        System.out.println("Hello World!");
+        System.out.println("Hello World!!");
     }
 }
