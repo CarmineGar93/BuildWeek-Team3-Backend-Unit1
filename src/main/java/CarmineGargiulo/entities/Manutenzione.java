@@ -14,6 +14,7 @@ public class Manutenzione {
     private UUID manutenzione_id;
     private LocalDate dataInizio;
     private LocalDate dataFine;
+    @Enumerated(EnumType.STRING)
     private TipoManutenzione tipoManutenzione;
     @ManyToOne
     @JoinColumn(name = "veicolo_id")

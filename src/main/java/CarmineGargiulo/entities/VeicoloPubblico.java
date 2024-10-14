@@ -17,6 +17,7 @@ public class VeicoloPubblico {
     private int capienza;
     private boolean inServizio = false;
     private boolean inManutenzione = false;
+    @Enumerated(EnumType.STRING)
     private TipoVeicolo tipoVeicolo;
     @OneToMany(mappedBy = "veicoloPubblico")
     private List<Manutenzione> manutenzioniList;
