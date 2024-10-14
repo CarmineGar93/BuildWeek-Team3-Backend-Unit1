@@ -3,6 +3,7 @@ package CarmineGargiulo.entities;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -18,6 +19,8 @@ public class Utente {
     @Column(nullable = false)
     private int anno_nascita;
     private static int count = 0;
+    @OneToMany(mappedBy = "utente")
+    private List<Abbonamento> abbonamentiList;
 
     public Utente(){
 
@@ -51,6 +54,10 @@ public class Utente {
 
     public void setAnno_nascita(int anno_nascita) {
         this.anno_nascita = anno_nascita;
+    }
+
+    public List<Abbonamento> getAbbonamentiList() {
+        return abbonamentiList;
     }
 
     @Override

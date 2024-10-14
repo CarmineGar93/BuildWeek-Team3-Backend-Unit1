@@ -8,7 +8,7 @@ import java.util.UUID;
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
 @Table(name = "titoli_viaggio")
-public class TitoloViaggio {
+public abstract class TitoloViaggio {
     @Id
     @GeneratedValue
     protected UUID titoloViaggio_id;
@@ -55,7 +55,7 @@ public class TitoloViaggio {
 
     @Override
     public String toString() {
-        return "Titolo di Viaggio = titoloViaggio_id:" + titoloViaggio_id +
+        return "titoloViaggio_id:" + titoloViaggio_id +
                 ", dataAcquisto: " + dataAcquisto +
                 ", puntoVendita: " + puntoVendita +
                 ", prezzoViaggio: " + prezzoViaggio;
