@@ -11,6 +11,7 @@ import java.util.UUID;
 public class Manutenzione {
     @Id
     @GeneratedValue
+    @Column(name = "manutenzione_id")
     private UUID manutenzioneId;
     @Column(name = "data_inizio", nullable = false)
     private LocalDate dataInizio;
