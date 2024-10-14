@@ -2,7 +2,6 @@ package CarmineGargiulo.entities;
 
 import jakarta.persistence.*;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -11,13 +10,14 @@ import java.util.UUID;
 public class Utente {
     @Id
     @GeneratedValue
-    private UUID utente_id;
+    @Column(name = "utente_id")
+    private UUID utenteId;
     @Column(nullable = false)
     private String nominativo;
-    @Column(nullable = false, unique = true)
-    private long numero_tessera;
-    @Column(nullable = false)
-    private int anno_nascita;
+    @Column(nullable = false, unique = true, name = "numero_tessera")
+    private long numeroTessera;
+    @Column(nullable = false, name = "anno_nascita")
+    private int annoNascita;
     private static int count = 0;
     @OneToMany(mappedBy = "utente")
     private List<Abbonamento> abbonamentiList;
@@ -25,15 +25,15 @@ public class Utente {
     public Utente(){
 
     }
-    public Utente(String nominativo, int anno_nascita) {
+    public Utente(String nominativo, int annoNascita) {
         this.nominativo = nominativo;
-        this.anno_nascita = anno_nascita;
-        this.numero_tessera = count;
+        this.annoNascita = annoNascita;
+        this.numeroTessera = count;
         count ++;
     }
 
-    public UUID getUtente_id() {
-        return utente_id;
+    public UUID getUtenteId() {
+        return utenteId;
     }
 
     public String getNominativo() {
@@ -44,16 +44,16 @@ public class Utente {
         this.nominativo = nominativo;
     }
 
-    public long getNumero_tessera() {
-        return numero_tessera;
+    public long getNumeroTessera() {
+        return numeroTessera;
     }
 
-    public int getAnno_nascita() {
-        return anno_nascita;
+    public int getAnnoNascita() {
+        return annoNascita;
     }
 
-    public void setAnno_nascita(int anno_nascita) {
-        this.anno_nascita = anno_nascita;
+    public void setAnnoNascita(int annoNascita) {
+        this.annoNascita = annoNascita;
     }
 
     public List<Abbonamento> getAbbonamentiList() {
@@ -62,9 +62,9 @@ public class Utente {
 
     @Override
     public String toString() {
-        return "Utente = utente_id: " + utente_id +
+        return "Utente = utente_id: " + utenteId +
                 ", nominativo: " + nominativo +
-                ", numero_tessera: " + numero_tessera +
-                ", anno_nascita: " + anno_nascita;
+                ", numero_tessera: " + numeroTessera +
+                ", anno_nascita: " + annoNascita;
     }
 }

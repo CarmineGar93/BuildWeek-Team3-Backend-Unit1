@@ -10,8 +10,11 @@ import java.util.UUID;
 public class Servizio {
     @Id
     @GeneratedValue
-    private UUID servizio_id;
+    @Column(name = "servizio_id")
+    private UUID servizioId;
+    @Column(name = "data_inizio")
     private LocalDate dataInizio;
+    @Column(name = "data_fine")
     private LocalDate dataFine;
     @ManyToOne
     @JoinColumn(name = "veicolo_id")
@@ -31,7 +34,7 @@ public class Servizio {
     }
 
     public UUID getServizio_id() {
-        return servizio_id;
+        return servizioId;
     }
 
     public LocalDate getDataInizio() {
@@ -60,7 +63,7 @@ public class Servizio {
 
     @Override
     public String toString() {
-        return "Servizio = servizio_id: " + servizio_id +
+        return "Servizio = servizio_id: " + servizioId +
                 ", dataInizio: " + dataInizio +
                 ", dataFine: " + dataFine +
                 ", veicolo: " + veicoloPubblico +

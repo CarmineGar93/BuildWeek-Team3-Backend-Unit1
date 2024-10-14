@@ -8,8 +8,11 @@ import java.time.LocalDate;
 @Entity
 @Table(name = "abbonamenti")
 public class Abbonamento extends TitoloViaggio{
+    @Column(name = "data_inizio", nullable = false)
     private LocalDate dataInizio;
+    @Column(name = "data_fine")
     private LocalDate dataFine;
+    @Column(name = "tipo_abbonamento", nullable = false)
     @Enumerated(EnumType.STRING)
     private TipoAbbonamento tipoAbbonamento;
     @ManyToOne
@@ -55,6 +58,6 @@ public class Abbonamento extends TitoloViaggio{
                 ", dataInizio: " + dataInizio +
                 ", dataFine: " + dataFine +
                 ", tipoAbbonamento: " + tipoAbbonamento +
-                ", numero_tessera: " + utente.getNumero_tessera();
+                ", numero_tessera: " + utente.getNumeroTessera();
     }
 }

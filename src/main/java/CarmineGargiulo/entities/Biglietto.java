@@ -1,5 +1,6 @@
 package CarmineGargiulo.entities;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 
@@ -10,7 +11,9 @@ import java.time.LocalDateTime;
 @Table(name = "biglietti")
 public class Biglietto extends TitoloViaggio{
     private boolean convalidato = false;
+    @Column(name = "data_convalidazione", nullable = false)
     private LocalDateTime dataConvalidazione;
+    @Column(nullable = false)
     private int durata;
 
     public Biglietto(double prezzoViaggio, LocalDate dataAcquisto, PuntoVendita puntoVendita, int durata) {

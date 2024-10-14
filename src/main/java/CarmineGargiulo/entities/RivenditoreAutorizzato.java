@@ -9,7 +9,6 @@ import jakarta.persistence.Table;
 public class RivenditoreAutorizzato extends PuntoVendita{
     @Column(nullable = false)
     private String nome;
-
     public RivenditoreAutorizzato(){
 
     }

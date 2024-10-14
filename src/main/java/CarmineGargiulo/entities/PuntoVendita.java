@@ -11,7 +11,8 @@ import java.util.UUID;
 public abstract class PuntoVendita {
     @Id
     @GeneratedValue
-    protected UUID puntoVendita_id;
+    @Column(name = "punto_vendita_id")
+    protected UUID puntoVenditaId;
     @Column(nullable = false)
     protected String indirizzo;
     @OneToMany(mappedBy = "puntoVendita")
@@ -24,8 +25,8 @@ public abstract class PuntoVendita {
         this.indirizzo = indirizzo;
     }
 
-    public UUID getPuntoVendita_id() {
-        return puntoVendita_id;
+    public UUID getPuntoVenditaId() {
+        return puntoVenditaId;
     }
 
     public String getIndirizzo() {
@@ -42,7 +43,7 @@ public abstract class PuntoVendita {
 
     @Override
     public String toString() {
-        return "puntoVendita_id: " + puntoVendita_id +
+        return "puntoVendita_id: " + puntoVenditaId +
                 ", indirizzo: " + indirizzo;
     }
 }

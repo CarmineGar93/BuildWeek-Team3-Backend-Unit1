@@ -11,13 +11,17 @@ import java.util.UUID;
 public class VeicoloPubblico {
     @Id
     @GeneratedValue
-    private UUID veicolo_id;
+    @Column(name = "veicolo_id")
+    private UUID veicoloId;
     @Column(unique = true, nullable = false)
     private String targa;
     private int capienza;
+    @Column(name = "in_servizio")
     private boolean inServizio = false;
+    @Column(name = "in_manutenzione")
     private boolean inManutenzione = false;
     @Enumerated(EnumType.STRING)
+    @Column(name = "tipo_veicolo")
     private TipoVeicolo tipoVeicolo;
     @OneToMany(mappedBy = "veicoloPubblico")
     private List<Manutenzione> manutenzioniList;
@@ -39,8 +43,8 @@ public class VeicoloPubblico {
         return serviziList;
     }
 
-    public UUID getVeicolo_id() {
-        return veicolo_id;
+    public UUID getVeicoloId() {
+        return veicoloId;
     }
 
     public String getTarga() {

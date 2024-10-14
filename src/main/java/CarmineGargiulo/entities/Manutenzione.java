@@ -11,9 +11,12 @@ import java.util.UUID;
 public class Manutenzione {
     @Id
     @GeneratedValue
-    private UUID manutenzione_id;
+    private UUID manutenzioneId;
+    @Column(name = "data_inizio", nullable = false)
     private LocalDate dataInizio;
+    @Column(name = "data_fine", nullable = false)
     private LocalDate dataFine;
+    @Column(name = "tipo_manutenzione")
     @Enumerated(EnumType.STRING)
     private TipoManutenzione tipoManutenzione;
     @ManyToOne
@@ -30,8 +33,8 @@ public class Manutenzione {
         this.veicoloPubblico = veicoloPubblico;
     }
 
-    public UUID getManutenzione_id() {
-        return manutenzione_id;
+    public UUID getManutenzioneId() {
+        return manutenzioneId;
     }
 
     public LocalDate getDataInizio() {
@@ -64,7 +67,7 @@ public class Manutenzione {
 
     @Override
     public String toString() {
-        return "Manutenzione = manutenzione_id: " + manutenzione_id +
+        return "Manutenzione = manutenzione_id: " + manutenzioneId +
                 ", dataInizio: " + dataInizio +
                 ", dataFine: " + dataFine +
                 ", tipoManutenzione: " + tipoManutenzione +

@@ -10,58 +10,63 @@ import java.util.UUID;
 public class Tratta {
     @Id
     @GeneratedValue
-    private UUID tratta_id;
-    private String nome_tratta;
-    private String punto_partenza;
-    private String punto_arrivo;
-    private int tempo_medio_percorrenza;
+    @Column(name = "tratta_id")
+    private UUID trattaId;
+    @Column(name = "nome_tratta")
+    private String nomeTratta;
+    @Column(name = "punto_partenza")
+    private String puntoPartenza;
+    @Column(name = "punto_arrivo")
+    private String puntoArrivo;
+    @Column(name = "tempo_medio_percorrenza")
+    private int tempoMedioPercorrenza;
     @OneToMany(mappedBy = "tratta")
     private List<Servizio> serviziList;
 
     public Tratta() {
     }
 
-    public Tratta(String nome_tratta, String punto_partenza, String punto_arrivo, int tempo_medio_percorrenza) {
-        this.punto_partenza = punto_partenza;
-        this.punto_arrivo = punto_arrivo;
-        this.tempo_medio_percorrenza = tempo_medio_percorrenza;
-        this.nome_tratta = nome_tratta;
+    public Tratta(String nomeTratta, String puntoPartenza, String puntoArrivo, int tempoMedioPercorrenza) {
+        this.puntoPartenza = puntoPartenza;
+        this.puntoArrivo = puntoArrivo;
+        this.tempoMedioPercorrenza = tempoMedioPercorrenza;
+        this.nomeTratta = nomeTratta;
     }
 
-    public String getNome_tratta() {
-        return nome_tratta;
+    public String getNomeTratta() {
+        return nomeTratta;
     }
 
-    public void setNome_tratta(String nome_tratta) {
-        this.nome_tratta = nome_tratta;
+    public void setNomeTratta(String nomeTratta) {
+        this.nomeTratta = nomeTratta;
     }
 
-    public UUID getTratta_id() {
-        return tratta_id;
+    public UUID getTrattId() {
+        return trattaId;
     }
 
-    public String getPunto_partenza() {
-        return punto_partenza;
+    public String getPuntoPartenza() {
+        return puntoPartenza;
     }
 
-    public String getPunto_arrivo() {
-        return punto_arrivo;
+    public String getPuntoArrivo() {
+        return puntoArrivo;
     }
 
-    public int getTempo_medio_percorrenza() {
-        return tempo_medio_percorrenza;
+    public int getTempoMedioPercorrenza() {
+        return tempoMedioPercorrenza;
     }
 
-    public void setPunto_partenza(String punto_partenza) {
-        this.punto_partenza = punto_partenza;
+    public void setPuntoPartenza(String puntoPartenza) {
+        this.puntoPartenza = puntoPartenza;
     }
 
-    public void setPunto_arrivo(String punto_arrivo) {
-        this.punto_arrivo = punto_arrivo;
+    public void setPuntoArrivo(String puntoArrivo) {
+        this.puntoArrivo = puntoArrivo;
     }
 
-    public void setTempo_medio_percorrenza(int tempo_medio_percorrenza) {
-        this.tempo_medio_percorrenza = tempo_medio_percorrenza;
+    public void setTempoMedioPercorrenza(int tempoMedioPercorrenza) {
+        this.tempoMedioPercorrenza = tempoMedioPercorrenza;
     }
 
     public List<Servizio> getServiziList() {
@@ -70,9 +75,9 @@ public class Tratta {
 
     @Override
     public String toString() {
-        return "Tratta = nome_tratta: " + nome_tratta +
-                ", punto_partenza: " + punto_partenza +
-                ", punto_arrivo: " + punto_arrivo +
-                ", tempo_medio_percorrenza: " + tempo_medio_percorrenza;
+        return "Tratta = nome_tratta: " + nomeTratta +
+                ", punto_partenza: " + puntoPartenza +
+                ", punto_arrivo: " + puntoArrivo +
+                ", tempo_medio_percorrenza: " + tempoMedioPercorrenza;
     }
 }

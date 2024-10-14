@@ -11,13 +11,14 @@ import java.util.UUID;
 public abstract class TitoloViaggio {
     @Id
     @GeneratedValue
-    protected UUID titoloViaggio_id;
-    @Column(nullable = false)
+    @Column(name = "titolo_viaggio_id")
+    protected UUID titoloViaggioId;
+    @Column(nullable = false, name = "prezzo_titolo_viaggio")
     protected double prezzoViaggio;
-    @Column(nullable = false)
+    @Column(nullable = false, name = "data_acquisto")
     protected LocalDate dataAcquisto;
     @ManyToOne
-    @JoinColumn(name = "puntoVendita_id")
+    @JoinColumn(name = "punto_vendita_id")
     protected PuntoVendita puntoVendita;
 
     public TitoloViaggio(){
@@ -30,7 +31,7 @@ public abstract class TitoloViaggio {
     }
 
     public UUID getTitoloViaggio_id() {
-        return titoloViaggio_id;
+        return titoloViaggioId;
     }
 
     public double getPrezzoViaggio() {
@@ -55,7 +56,7 @@ public abstract class TitoloViaggio {
 
     @Override
     public String toString() {
-        return "titoloViaggio_id:" + titoloViaggio_id +
+        return "titoloViaggio_id:" + titoloViaggioId +
                 ", dataAcquisto: " + dataAcquisto +
                 ", puntoVendita: " + puntoVendita +
                 ", prezzoViaggio: " + prezzoViaggio;
