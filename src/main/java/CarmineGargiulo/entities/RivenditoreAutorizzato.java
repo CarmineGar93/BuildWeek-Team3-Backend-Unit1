@@ -1,11 +1,13 @@
 package CarmineGargiulo.entities;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "rivenditori_autorizzati")
 public class RivenditoreAutorizzato extends PuntoVendita{
+    @Column(nullable = false)
     private String nome;
 
     public RivenditoreAutorizzato(){
