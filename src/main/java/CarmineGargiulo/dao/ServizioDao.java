@@ -23,12 +23,12 @@ public class ServizioDao {
         VeicoloPubblico veicolo = servizio.getVeicoloPubblico();
 
         if (veicolo != null) {
-
             if (veicolo.isInManutenzione()) {
-                throw new RuntimeException("Il veicolo " + veicolo.getTarga() + " è in manutenzione.");
+                throw new RuntimeException("Il veicolo " + veicolo.getTarga() + " è attualmente in manutenzione.");
             }
 
             veicolo.setInServizio(true);
+
             entityManager.merge(veicolo);
         } else {
             throw new RuntimeException("Nessun veicolo associato al servizio.");
@@ -36,7 +36,7 @@ public class ServizioDao {
 
         entityManager.persist(servizio);
         transaction.commit();
-        System.out.println("Il servizio " + servizio.getServizio_id() + "e' stato salvato correttamente");
+        System.out.println("Il servizio " + servizio.getServizio_id() + " è stato salvato correttamente.");
     }
 
     public List<Servizio> ottieniListaServizi() {
@@ -47,7 +47,7 @@ public class ServizioDao {
     public Servizio findServizioById(String id) {
         Servizio cercato = entityManager.find(Servizio.class, UUID.fromString(id));
         if (cercato == null) {
-            throw new RuntimeException("Alcun servizio trovato");
+            throw new RuntimeException("Nessun servizio trovato.");
         }
         return cercato;
     }

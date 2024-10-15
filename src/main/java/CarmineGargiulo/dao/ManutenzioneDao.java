@@ -20,24 +20,25 @@ public class ManutenzioneDao {
         EntityTransaction transaction = entityManager.getTransaction();
         transaction.begin();
 
+
         VeicoloPubblico veicolo = manutenzione.getVeicoloPubblico();
 
         if (veicolo != null) {
-
             if (veicolo.isInServizio()) {
-                throw new RuntimeException("Il veicolo " + veicolo.getTarga() + " è in servizio.");
+                throw new RuntimeException("Il veicolo " + veicolo.getTarga() + " è attualmente in servizio.");
             }
 
             veicolo.setInManutenzione(true);
             veicolo.setInServizio(false);
+
             entityManager.merge(veicolo);
         } else {
-            throw new RuntimeException("Nessun veicolo associato al servizio.");
+            throw new RuntimeException("Nessun veicolo associato alla manutenzione.");
         }
 
         entityManager.persist(manutenzione);
         transaction.commit();
-        System.out.println("La manutenzione " + manutenzione.getManutenzioneId() + "e' stata salvata correttamente");
+        System.out.println("La manutenzione " + manutenzione.getManutenzioneId() + " è stata salvata correttamente.");
     }
 
     public List<Manutenzione> ottieniListaManutenzioni() {
@@ -48,7 +49,7 @@ public class ManutenzioneDao {
     public Manutenzione findManutenzioneById(String id) {
         Manutenzione cercato = entityManager.find(Manutenzione.class, UUID.fromString(id));
         if (cercato == null) {
-            throw new RuntimeException("non e' stata trovata alcuna manutenzione ");
+            throw new RuntimeException("Non è stata trovata alcuna manutenzione.");
         }
         return cercato;
     }
