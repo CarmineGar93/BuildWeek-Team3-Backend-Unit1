@@ -31,7 +31,6 @@ public class Application {
         TessereDAO tessereDAO = new TessereDAO(em);
         TitoloViaggioDao titoloViaggioDao = new TitoloViaggioDao(em);
         VeicoloDAO veicoloDAO = new VeicoloDAO(em);
-
         inizializzaDb(puntoVenditaDAO, st, utenteDao, tessereDAO, titoloViaggioDao, veicoloDAO);
 
 
