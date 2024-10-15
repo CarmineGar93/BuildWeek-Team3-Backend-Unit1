@@ -1,10 +1,12 @@
 package CarmineGargiulo;
 
 import CarmineGargiulo.dao.PuntoVenditaDAO;
+import CarmineGargiulo.dao.UtenteDao;
 import CarmineGargiulo.entities.Distributore;
 import CarmineGargiulo.entities.RivenditoreAutorizzato;
 import CarmineGargiulo.dao.TratteDao;
 import CarmineGargiulo.entities.Tratta;
+import CarmineGargiulo.entities.Utente;
 import com.github.javafaker.Faker;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
@@ -18,7 +20,6 @@ public class Application {
     public static void main(String[] args) {
         EntityManager em = emf.createEntityManager();
         PuntoVenditaDAO puntoVenditaDAO = new PuntoVenditaDAO(em);
-        inizializzaDb(puntoVenditaDAO);
         TratteDao st = new TratteDao(em);
         UtenteDao utenteDao = new UtenteDao(em);
         inizializzaDb(puntoVenditaDAO, st, utenteDao);
