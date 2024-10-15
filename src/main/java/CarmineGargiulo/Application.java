@@ -1,16 +1,15 @@
 package CarmineGargiulo;
 
-import CarmineGargiulo.dao.PuntoVenditaDAO;
-import CarmineGargiulo.dao.TessereDAO;
-import CarmineGargiulo.dao.UtenteDao;
+import CarmineGargiulo.dao.*;
 import CarmineGargiulo.entities.*;
-import CarmineGargiulo.dao.TratteDao;
+import CarmineGargiulo.enums.TipoAbbonamento;
 import com.github.javafaker.Faker;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
 
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
@@ -23,13 +22,14 @@ public class Application {
         TratteDao st = new TratteDao(em);
         UtenteDao utenteDao = new UtenteDao(em);
         TessereDAO tessereDAO = new TessereDAO(em);
-        inizializzaDb(puntoVenditaDAO, st, utenteDao, tessereDAO);
+        TitoloViaggioDao titoloViaggioDao = new TitoloViaggioDao(em);
+        inizializzaDb(puntoVenditaDAO, st, utenteDao, tessereDAO, titoloViaggioDao);
 
         em.close();
         emf.close();
     }
 
-    public static void inizializzaDb(PuntoVenditaDAO puntoVenditaDAO, TratteDao tratteDao, UtenteDao utenteDao, TessereDAO tessereDAO){
+    public static void inizializzaDb(PuntoVenditaDAO puntoVenditaDAO, TratteDao tratteDao, UtenteDao utenteDao, TessereDAO tessereDAO, TitoloViaggioDao titoloViaggioDao){
         if(puntoVenditaDAO.ottieniListaPuntiVendita().isEmpty()){
             for (int i = 0; i < 10; i++) {
                 boolean random = faker.random().nextBoolean();
@@ -69,5 +69,31 @@ public class Application {
                 tessereDAO.salvaTessera(tessera);
             }
         }
+       if(titoloViaggioDao.ottieniListaTitoliViaggio().isEmpty()){
+           List<PuntoVendita> puntoVenditaList = puntoVenditaDAO.ottieniListaPuntiVendita();
+           List<Tessera> tesseraList = tessereDAO.ottieniListaTessere();
+           List<TipoAbbonamento> tipiList = Arrays.stream(TipoAbbonamento.values()).toList();
+           for (int i = 0; i < 10; i++) {
+               boolean random = faker.random().nextBoolean();
+               PuntoVendita puntoRandom;
+               while (true) {
+                   puntoRandom = puntoVenditaList.get(faker.random().nextInt(0, puntoVenditaList.size() - 1));
+                   if (puntoRandom instanceof RivenditoreAutorizzato) break;
+                   else if (((Distributore) puntoRandom).isAttivo()) break;
+               }
+               if(random){
+                   Biglietto biglietto = new Biglietto(Double.parseDouble(faker.commerce().price()),
+                           LocalDate.of(faker.random().nextInt(2020, 2024), faker.random().nextInt(1,12), faker.random().nextInt(1, 27)),
+                           puntoRandom);
+                   titoloViaggioDao.salvaTitoloViaggio(biglietto);
+               } else {
+                   Abbonamento abbonamento = new Abbonamento(Double.parseDouble(faker.commerce().price()),
+                           LocalDate.of(faker.random().nextInt(2020, 2024), faker.random().nextInt(1,12), faker.random().nextInt(1, 27)),
+                           puntoRandom, LocalDate.now(),
+                           tipiList.get(faker.random().nextInt(0, tipiList.size()-1)), tesseraList.get(faker.random().nextInt(0, tesseraList.size() -1)));
+                   titoloViaggioDao.salvaTitoloViaggio(abbonamento);
+               }
+           }
+       }
     }
 }

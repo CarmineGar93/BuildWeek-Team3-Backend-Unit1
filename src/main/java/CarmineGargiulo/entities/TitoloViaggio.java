@@ -8,6 +8,7 @@ import java.util.UUID;
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
 @Table(name = "titoli_viaggio")
+@NamedQuery(name = "getAllTitoliViaggio", query = "SELECT t FROM TitoloViaggio t")
 public abstract class TitoloViaggio {
     @Id
     @GeneratedValue

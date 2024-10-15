@@ -24,7 +24,7 @@ public class TitoloViaggioDao {
         System.out.println("Titolo viaggio " + titoloViaggio.getTitoloViaggio_id() + " salvato correttamente" );
     }
 
-    public List<TitoloViaggio> ottieniListaTessere(){
+    public List<TitoloViaggio> ottieniListaTitoliViaggio(){
         TypedQuery<TitoloViaggio> query = entityManager.createNamedQuery("getAllTitoliViaggio", TitoloViaggio.class);
         return query.getResultList();
     }
