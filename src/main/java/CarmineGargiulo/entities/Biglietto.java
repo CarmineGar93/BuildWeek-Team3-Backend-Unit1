@@ -1,8 +1,6 @@
 package CarmineGargiulo.entities;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 import java.time.LocalDate;
 
@@ -11,6 +9,9 @@ import java.time.LocalDate;
 public class Biglietto extends TitoloViaggio{
     @Column(nullable = false)
     private boolean convalidato = false;
+    @ManyToOne
+    @JoinColumn(name = "veicolo_convalidazione_id")
+    private VeicoloPubblico veicoloPubblico;
 
     public Biglietto(double prezzoViaggio, LocalDate dataAcquisto, PuntoVendita puntoVendita) {
         super(prezzoViaggio, dataAcquisto, puntoVendita);
@@ -24,9 +25,17 @@ public class Biglietto extends TitoloViaggio{
         this.convalidato = convalidato;
     }
 
+    public VeicoloPubblico getVeicoloPubblico() {
+        return veicoloPubblico;
+    }
+
+    public void setVeicoloPubblico(VeicoloPubblico veicoloPubblico) {
+        this.veicoloPubblico = veicoloPubblico;
+    }
+
     @Override
     public String toString() {
         return "Biglietto = " + super.toString() +
-                ", convalidato: " + convalidato;
+                ", convalidato: " + convalidato + ", veicolo di convalidazione: " + veicoloPubblico;
     }
 }

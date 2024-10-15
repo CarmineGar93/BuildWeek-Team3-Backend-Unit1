@@ -27,6 +27,8 @@ public class VeicoloPubblico {
     private List<Manutenzione> manutenzioniList;
     @OneToMany(mappedBy = "veicoloPubblico")
     private List<Servizio> serviziList;
+    @OneToMany(mappedBy = "veicoloPubblico")
+    private List<Biglietto> bigliettiList;
 
     public VeicoloPubblico(String targa, TipoVeicolo tipoVeicolo) {
         this.targa = targa;
@@ -81,6 +83,10 @@ public class VeicoloPubblico {
 
     public void setTipoVeicolo(TipoVeicolo tipoVeicolo) {
         this.tipoVeicolo = tipoVeicolo;
+    }
+
+    public List<Biglietto> getBigliettiList() {
+        return bigliettiList;
     }
 
     @Override
