@@ -18,19 +18,14 @@ public class Application {
     public static void main(String[] args) {
         EntityManager em = emf.createEntityManager();
         PuntoVenditaDAO puntoVenditaDAO = new PuntoVenditaDAO(em);
-        inizializzaDb(puntoVenditaDAO);
         TratteDao st = new TratteDao(em);
-        for (int i = 0; i < 5; i++) {
-            Tratta t1 = new Tratta(
-                    "Linea " + (i+1),
-                    faker.address().cityName(),
-                    faker.address().cityName(),
-                    faker.number().numberBetween(20,60)
-            );
-            st.saveTratta(t1);
+        inizializzaDb(puntoVenditaDAO, st);
+
+        em.close();
+        emf.close();
     }
 
-    public static void inizializzaDb(PuntoVenditaDAO puntoVenditaDAO){
+    public static void inizializzaDb(PuntoVenditaDAO puntoVenditaDAO, TratteDao tratteDao){
         if(puntoVenditaDAO.ottieniListaPuntiVendita().isEmpty()){
             for (int i = 0; i < 10; i++) {
                 boolean random = faker.random().nextBoolean();
@@ -43,15 +38,17 @@ public class Application {
                 }
             }
         }
+        if(tratteDao.ottieniListaTratte().isEmpty()){
+            for (int i = 0; i < 5; i++) {
+                Tratta t1 = new Tratta(
+                        "Linea " + (i + 1),
+                        faker.address().cityName(),
+                        faker.address().cityName(),
+                        faker.number().numberBetween(20, 60)
+                );
+                tratteDao.saveTratta(t1);
+            }
+        }
 
     }
-
-
-
-
-
-
-
-        em.close();
-        emf.close();
 }
