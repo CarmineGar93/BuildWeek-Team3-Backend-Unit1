@@ -8,11 +8,11 @@ import CarmineGargiulo.dao.UtenteDao;
 import CarmineGargiulo.dao.VeicoloDAO;
 import CarmineGargiulo.dao.TratteDao;
 import CarmineGargiulo.enums.TipoVeicolo;
+import CarmineGargiulo.exceptions.AbbonamentoDateException;
 import com.github.javafaker.Faker;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
-
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
@@ -97,7 +97,12 @@ public class Application {
                            LocalDate.of(faker.random().nextInt(2020, 2024), faker.random().nextInt(1, 12), faker.random().nextInt(1, 27)),
                            puntoRandom, LocalDate.now(),
                            tipiList.get(faker.random().nextInt(0, tipiList.size() - 1)), tesseraList.get(faker.random().nextInt(0, tesseraList.size() - 1)));
-                   titoloViaggioDao.salvaTitoloViaggio(abbonamento);
+                   try{
+                       titoloViaggioDao.salvaTitoloViaggio(abbonamento);
+                   } catch (AbbonamentoDateException e) {
+                       System.out.println(e.getMessage());
+                   }
+
                }
            }
        }

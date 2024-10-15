@@ -3,6 +3,7 @@ package CarmineGargiulo.dao;
 import CarmineGargiulo.entities.Abbonamento;
 import CarmineGargiulo.entities.Tessera;
 import CarmineGargiulo.entities.TitoloViaggio;
+import CarmineGargiulo.exceptions.AbbonamentoDateException;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.TypedQuery;
@@ -19,7 +20,10 @@ public class TitoloViaggioDao {
 
     public void salvaTitoloViaggio(TitoloViaggio titoloViaggio){
         if(titoloViaggio instanceof Abbonamento){
-
+            List<Abbonamento> abbonamentiList = getAllAbbonamentiByTessera(((Abbonamento) titoloViaggio).getTessera());
+            if(!abbonamentiList.isEmpty()){
+                if(abbonamentiList.stream().anyMatch(abbonamento -> ((Abbonamento) titoloViaggio).getDataInizio().isBefore(abbonamento.getDataFine()))) throw new AbbonamentoDateException();
+            }
         }
         EntityTransaction transaction = entityManager.getTransaction();
         transaction.begin();
@@ -37,5 +41,11 @@ public class TitoloViaggioDao {
         TitoloViaggio cercato = entityManager.find(TitoloViaggio.class, UUID.fromString(id));
         if(cercato == null) throw new RuntimeException(); //TODO creare eccezione
         return cercato;
+    }
+
+    public List<Abbonamento> getAllAbbonamentiByTessera(Tessera tessera){
+        TypedQuery<Abbonamento> query = entityManager.createQuery("SELECT a FROM Abbonamento a WHERE a.tessera = :tessera", Abbonamento.class);
+        query.setParameter("tessera", tessera);
+        return query.getResultList();
     }
 }
