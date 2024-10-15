@@ -9,11 +9,11 @@ import CarmineGargiulo.dao.VeicoloDAO;
 import CarmineGargiulo.dao.TratteDao;
 import CarmineGargiulo.enums.TipoVeicolo;
 import CarmineGargiulo.exceptions.AbbonamentoDateException;
-import CarmineGargiulo.exceptions.NotFoundException;
 import com.github.javafaker.Faker;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
+
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
@@ -22,6 +22,7 @@ import java.util.Locale;
 public class Application {
     private static final EntityManagerFactory emf = Persistence.createEntityManagerFactory("azienda-trasporti");
     private static final Faker faker = new Faker(Locale.ITALY);
+
     public static void main(String[] args) {
         EntityManager em = emf.createEntityManager();
         PuntoVenditaDAO puntoVenditaDAO = new PuntoVenditaDAO(em);
@@ -30,6 +31,7 @@ public class Application {
         TessereDAO tessereDAO = new TessereDAO(em);
         TitoloViaggioDao titoloViaggioDao = new TitoloViaggioDao(em);
         VeicoloDAO veicoloDAO = new VeicoloDAO(em);
+
         inizializzaDb(puntoVenditaDAO, st, utenteDao, tessereDAO, titoloViaggioDao, veicoloDAO);
 
 
