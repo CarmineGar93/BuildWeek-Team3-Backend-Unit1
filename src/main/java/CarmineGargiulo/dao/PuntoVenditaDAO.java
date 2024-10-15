@@ -3,7 +3,6 @@ package CarmineGargiulo.dao;
 import CarmineGargiulo.entities.PuntoVendita;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
-import jakarta.persistence.NamedQuery;
 import jakarta.persistence.TypedQuery;
 
 import java.util.List;
