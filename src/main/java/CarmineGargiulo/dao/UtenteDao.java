@@ -9,10 +9,10 @@ import java.util.List;
 import java.util.UUID;
 
 
-public class utenteDao {
+public class UtenteDao {
     private final EntityManager entityManager;
 
-    public utenteDao(EntityManager entityManager){
+    public UtenteDao(EntityManager entityManager){
         this.entityManager = entityManager;
     }
 
@@ -21,7 +21,7 @@ public class utenteDao {
         transaction.begin();
         entityManager.persist(utente);
         transaction.commit();
-        System.out.println("Utente" + utente.getUtenteId() + " salvato correttamente" );
+        System.out.println("Utente" + utente.getNominativo() + " salvato correttamente" );
     }
 
     public List<Utente> ottieniListaUtenti(){
