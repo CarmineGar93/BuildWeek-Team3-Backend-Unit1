@@ -8,6 +8,7 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "tessere")
+@NamedQuery(name = "getAllTessere", query = "SELECT t FROM Tessera t")
 public class Tessera {
     @Id
     @GeneratedValue
