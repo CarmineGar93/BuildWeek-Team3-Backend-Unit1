@@ -18,14 +18,16 @@ public class Application {
     public static void main(String[] args) {
         EntityManager em = emf.createEntityManager();
         PuntoVenditaDAO puntoVenditaDAO = new PuntoVenditaDAO(em);
+        inizializzaDb(puntoVenditaDAO);
         TratteDao st = new TratteDao(em);
-        inizializzaDb(puntoVenditaDAO, st);
+        UtenteDao utenteDao = new UtenteDao(em);
+        inizializzaDb(puntoVenditaDAO, st, utenteDao);
 
         em.close();
         emf.close();
     }
 
-    public static void inizializzaDb(PuntoVenditaDAO puntoVenditaDAO, TratteDao tratteDao){
+    public static void inizializzaDb(PuntoVenditaDAO puntoVenditaDAO, TratteDao tratteDao, UtenteDao utenteDao){
         if(puntoVenditaDAO.ottieniListaPuntiVendita().isEmpty()){
             for (int i = 0; i < 10; i++) {
                 boolean random = faker.random().nextBoolean();
@@ -47,6 +49,15 @@ public class Application {
                         faker.number().numberBetween(20, 60)
                 );
                 tratteDao.saveTratta(t1);
+            }
+        }
+        if (utenteDao.ottieniListaUtenti().isEmpty()){
+            for (int i = 0; i < 5; i++) {
+                Utente utente= new Utente(
+                        faker.name().fullName(),
+                        faker.random().nextInt(1950,2006)
+                );
+                utenteDao.salvaUtenteDao(utente);
             }
         }
 
