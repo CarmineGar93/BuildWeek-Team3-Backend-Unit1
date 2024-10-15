@@ -1,5 +1,6 @@
 package CarmineGargiulo.dao;
 
+import CarmineGargiulo.entities.Abbonamento;
 import CarmineGargiulo.entities.Tessera;
 import CarmineGargiulo.entities.TitoloViaggio;
 import jakarta.persistence.EntityManager;
@@ -17,6 +18,9 @@ public class TitoloViaggioDao {
     }
 
     public void salvaTitoloViaggio(TitoloViaggio titoloViaggio){
+        if(titoloViaggio instanceof Abbonamento){
+
+        }
         EntityTransaction transaction = entityManager.getTransaction();
         transaction.begin();
         entityManager.persist(titoloViaggio);
