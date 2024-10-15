@@ -23,18 +23,14 @@ public class ManutenzioneDao {
 
         VeicoloPubblico veicolo = manutenzione.getVeicoloPubblico();
 
-        if (veicolo != null) {
-            if (veicolo.isInServizio()) {
-                throw new RuntimeException("Il veicolo " + veicolo.getTarga() + " è attualmente in servizio.");
-            }
-
-            veicolo.setInManutenzione(true);
-            veicolo.setInServizio(false);
-
-            entityManager.merge(veicolo);
-        } else {
-            throw new RuntimeException("Nessun veicolo associato alla manutenzione.");
+        if (veicolo.isInServizio()) {
+            throw new RuntimeException("Il veicolo " + veicolo.getTarga() + " è attualmente in servizio.");
         }
+
+        veicolo.setInManutenzione(true);
+        veicolo.setInServizio(false);
+
+        entityManager.merge(veicolo);
 
         entityManager.persist(manutenzione);
         transaction.commit();
