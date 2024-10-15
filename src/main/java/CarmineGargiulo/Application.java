@@ -9,6 +9,7 @@ import CarmineGargiulo.dao.VeicoloDAO;
 import CarmineGargiulo.dao.TratteDao;
 import CarmineGargiulo.enums.TipoVeicolo;
 import CarmineGargiulo.exceptions.AbbonamentoDateException;
+import CarmineGargiulo.exceptions.NotFoundException;
 import com.github.javafaker.Faker;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
@@ -30,6 +31,7 @@ public class Application {
         TitoloViaggioDao titoloViaggioDao = new TitoloViaggioDao(em);
         VeicoloDAO veicoloDAO = new VeicoloDAO(em);
         inizializzaDb(puntoVenditaDAO, st, utenteDao, tessereDAO, titoloViaggioDao, veicoloDAO);
+
 
         em.close();
         emf.close();
