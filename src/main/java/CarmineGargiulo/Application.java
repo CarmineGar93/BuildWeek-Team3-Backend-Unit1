@@ -3,6 +3,8 @@ package CarmineGargiulo;
 import CarmineGargiulo.dao.PuntoVenditaDAO;
 import CarmineGargiulo.entities.Distributore;
 import CarmineGargiulo.entities.RivenditoreAutorizzato;
+import CarmineGargiulo.dao.TratteDao;
+import CarmineGargiulo.entities.Tratta;
 import com.github.javafaker.Faker;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
@@ -17,6 +19,15 @@ public class Application {
         EntityManager em = emf.createEntityManager();
         PuntoVenditaDAO puntoVenditaDAO = new PuntoVenditaDAO(em);
         inizializzaDb(puntoVenditaDAO);
+        TratteDao st = new TratteDao(em);
+        for (int i = 0; i < 5; i++) {
+            Tratta t1 = new Tratta(
+                    "Linea " + (i+1),
+                    faker.address().cityName(),
+                    faker.address().cityName(),
+                    faker.number().numberBetween(20,60)
+            );
+            st.saveTratta(t1);
     }
 
     public static void inizializzaDb(PuntoVenditaDAO puntoVenditaDAO){
@@ -32,5 +43,15 @@ public class Application {
                 }
             }
         }
+
     }
+
+
+
+
+
+
+
+        em.close();
+        emf.close();
 }
