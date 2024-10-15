@@ -102,7 +102,6 @@ public class Application {
                    } catch (AbbonamentoDateException e) {
                        System.out.println(e.getMessage());
                    }
-
                }
            }
        }
