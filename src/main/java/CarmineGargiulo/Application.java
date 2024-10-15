@@ -87,16 +87,16 @@ public class Application {
                    if (puntoRandom instanceof RivenditoreAutorizzato) break;
                    else if (((Distributore) puntoRandom).isAttivo()) break;
                }
-               if(random){
-                   Biglietto biglietto = new Biglietto(Double.parseDouble(faker.commerce().price()),
-                           LocalDate.of(faker.random().nextInt(2020, 2024), faker.random().nextInt(1,12), faker.random().nextInt(1, 27)),
+               if (random) {
+                   Biglietto biglietto = new Biglietto(Double.parseDouble(faker.commerce().price().replace(",", ".")),
+                           LocalDate.of(faker.random().nextInt(2020, 2024), faker.random().nextInt(1, 12), faker.random().nextInt(1, 27)),
                            puntoRandom);
                    titoloViaggioDao.salvaTitoloViaggio(biglietto);
                } else {
-                   Abbonamento abbonamento = new Abbonamento(Double.parseDouble(faker.commerce().price()),
-                           LocalDate.of(faker.random().nextInt(2020, 2024), faker.random().nextInt(1,12), faker.random().nextInt(1, 27)),
+                   Abbonamento abbonamento = new Abbonamento(Double.parseDouble(faker.commerce().price().replace(",", ".")),
+                           LocalDate.of(faker.random().nextInt(2020, 2024), faker.random().nextInt(1, 12), faker.random().nextInt(1, 27)),
                            puntoRandom, LocalDate.now(),
-                           tipiList.get(faker.random().nextInt(0, tipiList.size()-1)), tesseraList.get(faker.random().nextInt(0, tesseraList.size() -1)));
+                           tipiList.get(faker.random().nextInt(0, tipiList.size() - 1)), tesseraList.get(faker.random().nextInt(0, tesseraList.size() - 1)));
                    titoloViaggioDao.salvaTitoloViaggio(abbonamento);
                }
            }

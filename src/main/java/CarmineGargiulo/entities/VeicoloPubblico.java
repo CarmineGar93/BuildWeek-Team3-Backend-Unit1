@@ -32,6 +32,9 @@ public class VeicoloPubblico {
     @OneToMany(mappedBy = "veicoloPubblico")
     private List<Biglietto> bigliettiList;
 
+    public VeicoloPubblico() {
+    }
+
     public VeicoloPubblico(String targa, TipoVeicolo tipoVeicolo) {
         this.targa = targa;
         this.tipoVeicolo = tipoVeicolo;
