@@ -3,6 +3,11 @@ package CarmineGargiulo;
 import CarmineGargiulo.dao.*;
 import CarmineGargiulo.entities.*;
 import CarmineGargiulo.enums.TipoAbbonamento;
+import CarmineGargiulo.dao.PuntoVenditaDAO;
+import CarmineGargiulo.dao.UtenteDao;
+import CarmineGargiulo.dao.VeicoloDAO;
+import CarmineGargiulo.dao.TratteDao;
+import CarmineGargiulo.enums.TipoVeicolo;
 import com.github.javafaker.Faker;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
@@ -23,13 +28,14 @@ public class Application {
         UtenteDao utenteDao = new UtenteDao(em);
         TessereDAO tessereDAO = new TessereDAO(em);
         TitoloViaggioDao titoloViaggioDao = new TitoloViaggioDao(em);
-        inizializzaDb(puntoVenditaDAO, st, utenteDao, tessereDAO, titoloViaggioDao);
+        VeicoloDAO veicoloDAO = new VeicoloDAO(em);
+        inizializzaDb(puntoVenditaDAO, st, utenteDao, tessereDAO, titoloViaggioDao, veicoloDAO);
 
         em.close();
         emf.close();
     }
 
-    public static void inizializzaDb(PuntoVenditaDAO puntoVenditaDAO, TratteDao tratteDao, UtenteDao utenteDao, TessereDAO tessereDAO, TitoloViaggioDao titoloViaggioDao){
+    public static void inizializzaDb(PuntoVenditaDAO puntoVenditaDAO, TratteDao tratteDao, UtenteDao utenteDao, TessereDAO tessereDAO, TitoloViaggioDao titoloViaggioDao, VeicoloDAO veicoloDAO){
         if(puntoVenditaDAO.ottieniListaPuntiVendita().isEmpty()){
             for (int i = 0; i < 10; i++) {
                 boolean random = faker.random().nextBoolean();
@@ -95,5 +101,22 @@ public class Application {
                }
            }
        }
+        if (veicoloDAO.ottieniListaVeicoli().isEmpty()){
+            for (int i = 0; i < 6; i++) {
+                VeicoloPubblico veicoloPubblico = new VeicoloPubblico(
+                        faker.bothify("??###??").toUpperCase(),
+                        TipoVeicolo.TRAM
+                );
+
+                veicoloDAO.salvaVeicolo(veicoloPubblico);
+            }
+            for (int i = 0; i < 6; i++) {
+                VeicoloPubblico veicoloPubblico = new VeicoloPubblico(
+                        faker.bothify("??###??").toUpperCase(),
+                        TipoVeicolo.AUTOBUS
+                );
+                veicoloDAO.salvaVeicolo(veicoloPubblico);
+            }
+        }
     }
 }
