@@ -31,7 +31,7 @@ public class utenteDao {
 
     public Utente findUtenteById(String id){
         Utente cercato = entityManager.find(Utente.class, UUID.fromString(id));
-        if(cercato == null) throw new RuntimeException(); //TODO aggiungere eccezione personale
+        if(cercato == null) throw new RuntimeException(); //
         return cercato;
     }
 }
