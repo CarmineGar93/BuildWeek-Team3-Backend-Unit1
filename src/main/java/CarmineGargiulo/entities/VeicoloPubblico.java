@@ -8,6 +8,8 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "veicoli_pubblici")
+@NamedQuery(name = "getAllVeicoli", query = "SELECT v FROM VeicoloPubblico v"
+)
 public class VeicoloPubblico {
     @Id
     @GeneratedValue

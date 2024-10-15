@@ -2,11 +2,10 @@ package CarmineGargiulo;
 
 import CarmineGargiulo.dao.PuntoVenditaDAO;
 import CarmineGargiulo.dao.UtenteDao;
-import CarmineGargiulo.entities.Distributore;
-import CarmineGargiulo.entities.RivenditoreAutorizzato;
+import CarmineGargiulo.dao.VeicoloDAO;
+import CarmineGargiulo.entities.*;
 import CarmineGargiulo.dao.TratteDao;
-import CarmineGargiulo.entities.Tratta;
-import CarmineGargiulo.entities.Utente;
+import CarmineGargiulo.enums.TipoVeicolo;
 import com.github.javafaker.Faker;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
@@ -22,13 +21,14 @@ public class Application {
         PuntoVenditaDAO puntoVenditaDAO = new PuntoVenditaDAO(em);
         TratteDao st = new TratteDao(em);
         UtenteDao utenteDao = new UtenteDao(em);
-        inizializzaDb(puntoVenditaDAO, st, utenteDao);
+        VeicoloDAO veicoloDAO = new VeicoloDAO(em);
+        inizializzaDb(puntoVenditaDAO, st, utenteDao, veicoloDAO);
 
         em.close();
         emf.close();
     }
 
-    public static void inizializzaDb(PuntoVenditaDAO puntoVenditaDAO, TratteDao tratteDao, UtenteDao utenteDao){
+    public static void inizializzaDb(PuntoVenditaDAO puntoVenditaDAO, TratteDao tratteDao, UtenteDao utenteDao, VeicoloDAO veicoloDAO){
         if(puntoVenditaDAO.ottieniListaPuntiVendita().isEmpty()){
             for (int i = 0; i < 10; i++) {
                 boolean random = faker.random().nextBoolean();
@@ -59,6 +59,23 @@ public class Application {
                         faker.random().nextInt(1950,2006)
                 );
                 utenteDao.salvaUtenteDao(utente);
+            }
+        }
+        if (veicoloDAO.ottieniListaVeicoli().isEmpty()){
+            for (int i = 0; i < 6; i++) {
+                VeicoloPubblico veicoloPubblico = new VeicoloPubblico(
+                        faker.bothify("??###??"),
+                        TipoVeicolo.TRAM
+                );
+
+               veicoloDAO.salvaVeicolo(veicoloPubblico);
+            }
+            for (int i = 0; i < 6; i++) {
+                VeicoloPubblico veicoloPubblico = new VeicoloPubblico(
+                        faker.bothify("??###??"),
+                        TipoVeicolo.AUTOBUS
+                );
+                veicoloDAO.salvaVeicolo(veicoloPubblico);
             }
         }
 
