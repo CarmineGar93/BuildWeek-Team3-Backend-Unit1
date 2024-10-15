@@ -22,10 +22,11 @@ public class TratteDao {
         System.out.println("La tratta " + tratta.getNomeTratta() + " è stata creata con successo");
     }
 
-   /* public Tratta findById(UUID trattaId) {
+    public Tratta findTratta(UUID trattaId) {
         Tratta found = entityManager.find(Tratta.class, trattaId);
-        if (found == null) throw new
-    }*/
+        if (found == null) throw new RuntimeException("La tratta " + trattaId + " non è stata trovata");
+        return found;
+    }
 
 }
 
