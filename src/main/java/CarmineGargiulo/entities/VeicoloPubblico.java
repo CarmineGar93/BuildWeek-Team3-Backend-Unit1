@@ -32,10 +32,14 @@ public class VeicoloPubblico {
     @OneToMany(mappedBy = "veicoloPubblico")
     private List<Biglietto> bigliettiList;
 
+    public VeicoloPubblico() {
+    }
+
+
     public VeicoloPubblico(String targa, TipoVeicolo tipoVeicolo) {
         this.targa = targa;
         this.tipoVeicolo = tipoVeicolo;
-        if(tipoVeicolo == TipoVeicolo.AUTOBUS) capienza = 70;
+        if (tipoVeicolo == TipoVeicolo.AUTOBUS) capienza = 70;
         else capienza = 150;
     }
 
