@@ -5,20 +5,15 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "biglietti")
 public class Biglietto extends TitoloViaggio{
-    private boolean convalidato = false;
-    @Column(name = "data_convalidazione", nullable = false)
-    private LocalDateTime dataConvalidazione;
     @Column(nullable = false)
-    private int durata;
+    private boolean convalidato = false;
 
-    public Biglietto(double prezzoViaggio, LocalDate dataAcquisto, PuntoVendita puntoVendita, int durata) {
+    public Biglietto(double prezzoViaggio, LocalDate dataAcquisto, PuntoVendita puntoVendita) {
         super(prezzoViaggio, dataAcquisto, puntoVendita);
-        this.durata = durata;
     }
 
     public boolean isConvalidato() {
@@ -29,27 +24,9 @@ public class Biglietto extends TitoloViaggio{
         this.convalidato = convalidato;
     }
 
-    public LocalDateTime getDataConvalidazione() {
-        return dataConvalidazione;
-    }
-
-    public void setDataConvalidazione(LocalDateTime dataConvalidazione) {
-        this.dataConvalidazione = dataConvalidazione;
-    }
-
-    public int getDurata() {
-        return durata;
-    }
-
-    public void setDurata(int durata) {
-        this.durata = durata;
-    }
-
     @Override
     public String toString() {
         return "Biglietto = " + super.toString() +
-                ", convalidato: " + convalidato +
-                ", dataConvalidazione: " + dataConvalidazione +
-                ", durata: " + durata;
+                ", convalidato: " + convalidato;
     }
 }

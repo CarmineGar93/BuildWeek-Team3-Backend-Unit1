@@ -16,12 +16,12 @@ public class Abbonamento extends TitoloViaggio{
     @Enumerated(EnumType.STRING)
     private TipoAbbonamento tipoAbbonamento;
     @ManyToOne
-    @JoinColumn(name = "utente_id")
-    private Utente utente;
+    @JoinColumn(name = "tessera_id")
+    private Tessera tessera;
     public Abbonamento(){
 
     }
-    public Abbonamento(double prezzoViaggio, LocalDate dataAcquisto, PuntoVendita puntoVendita, LocalDate dataInizio, TipoAbbonamento tipoAbbonamento, Utente utente) {
+    public Abbonamento(double prezzoViaggio, LocalDate dataAcquisto, PuntoVendita puntoVendita, LocalDate dataInizio, TipoAbbonamento tipoAbbonamento, Tessera tessera) {
         super(prezzoViaggio, dataAcquisto, puntoVendita);
         this.dataInizio = dataInizio;
         if(tipoAbbonamento == TipoAbbonamento.SETTIMANALE) this.dataFine = dataInizio.plusDays(7);
@@ -29,7 +29,7 @@ public class Abbonamento extends TitoloViaggio{
         else if (tipoAbbonamento == TipoAbbonamento.SEMESTRALE) this.dataFine = dataInizio.plusMonths(6);
         else this.dataFine = dataInizio.plusYears(1);
         this.tipoAbbonamento = tipoAbbonamento;
-        this.utente = utente;
+        this.tessera = tessera;
     }
 
     public LocalDate getDataInizio() {
@@ -48,8 +48,8 @@ public class Abbonamento extends TitoloViaggio{
         this.tipoAbbonamento = tipoAbbonamento;
     }
 
-    public Utente getUtente() {
-        return utente;
+    public Tessera getTessera() {
+        return tessera;
     }
 
     @Override
@@ -58,6 +58,6 @@ public class Abbonamento extends TitoloViaggio{
                 ", dataInizio: " + dataInizio +
                 ", dataFine: " + dataFine +
                 ", tipoAbbonamento: " + tipoAbbonamento +
-                ", numero_tessera: " + utente.getNumeroTessera();
+                ", tessera: " + tessera;
     }
 }
