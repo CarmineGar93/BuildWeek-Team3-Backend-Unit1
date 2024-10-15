@@ -1,17 +1,17 @@
 package CarmineGargiulo;
 
 import CarmineGargiulo.dao.PuntoVenditaDAO;
+import CarmineGargiulo.dao.TessereDAO;
 import CarmineGargiulo.dao.UtenteDao;
-import CarmineGargiulo.entities.Distributore;
-import CarmineGargiulo.entities.RivenditoreAutorizzato;
+import CarmineGargiulo.entities.*;
 import CarmineGargiulo.dao.TratteDao;
-import CarmineGargiulo.entities.Tratta;
-import CarmineGargiulo.entities.Utente;
 import com.github.javafaker.Faker;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
 
+import java.time.LocalDate;
+import java.util.List;
 import java.util.Locale;
 
 public class Application {
@@ -22,13 +22,14 @@ public class Application {
         PuntoVenditaDAO puntoVenditaDAO = new PuntoVenditaDAO(em);
         TratteDao st = new TratteDao(em);
         UtenteDao utenteDao = new UtenteDao(em);
-        inizializzaDb(puntoVenditaDAO, st, utenteDao);
+        TessereDAO tessereDAO = new TessereDAO(em);
+        inizializzaDb(puntoVenditaDAO, st, utenteDao, tessereDAO);
 
         em.close();
         emf.close();
     }
 
-    public static void inizializzaDb(PuntoVenditaDAO puntoVenditaDAO, TratteDao tratteDao, UtenteDao utenteDao){
+    public static void inizializzaDb(PuntoVenditaDAO puntoVenditaDAO, TratteDao tratteDao, UtenteDao utenteDao, TessereDAO tessereDAO){
         if(puntoVenditaDAO.ottieniListaPuntiVendita().isEmpty()){
             for (int i = 0; i < 10; i++) {
                 boolean random = faker.random().nextBoolean();
@@ -61,6 +62,12 @@ public class Application {
                 utenteDao.salvaUtenteDao(utente);
             }
         }
-
+        if(tessereDAO.ottieniListaTessere().isEmpty()){
+            List<Utente> utentiList = utenteDao.ottieniListaUtenti();
+            for (int i = 0; i < utentiList.size(); i++) {
+                Tessera tessera = new Tessera(LocalDate.now(), utentiList.get(i));
+                tessereDAO.salvaTessera(tessera);
+            }
+        }
     }
 }
