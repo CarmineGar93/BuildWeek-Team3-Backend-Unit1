@@ -7,6 +7,7 @@ import jakarta.persistence.NamedQuery;
 import jakarta.persistence.TypedQuery;
 
 import java.util.List;
+import java.util.UUID;
 
 
 public class PuntoVenditaDAO {
@@ -27,5 +28,11 @@ public class PuntoVenditaDAO {
     public List<PuntoVendita> ottieniListaPuntiVendita(){
         TypedQuery<PuntoVendita> query = entityManager.createNamedQuery("getAllPuntiVendita", PuntoVendita.class);
         return query.getResultList();
+    }
+
+    public PuntoVendita findPuntoVenditaById(String id){
+        PuntoVendita cercato = entityManager.find(PuntoVendita.class, UUID.fromString(id));
+        if(cercato == null) throw new RuntimeException(); //TODO aggiungere eccezione personale
+        return cercato;
     }
 }
