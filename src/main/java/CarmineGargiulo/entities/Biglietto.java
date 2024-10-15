@@ -13,6 +13,10 @@ public class Biglietto extends TitoloViaggio{
     @JoinColumn(name = "veicolo_convalidazione_id")
     private VeicoloPubblico veicoloPubblico;
 
+    public Biglietto(){
+
+    }
+
     public Biglietto(double prezzoViaggio, LocalDate dataAcquisto, PuntoVendita puntoVendita) {
         super(prezzoViaggio, dataAcquisto, puntoVendita);
     }
