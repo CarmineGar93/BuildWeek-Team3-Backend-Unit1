@@ -22,14 +22,11 @@ public class ServizioDao {
 
         VeicoloPubblico veicolo = servizio.getVeicoloPubblico();
 
-
         if (veicolo.isInManutenzione()) {
-            throw new RuntimeException("Il veicolo " + veicolo.getTarga() + " è attualmente in manutenzione.");
+            throw new RuntimeException("Il veicolo " + veicolo.getTarga() + " è attualmente in manutenzione .");
         }
 
         veicolo.setInServizio(true);
-
-        entityManager.merge(veicolo);
 
         entityManager.persist(servizio);
         transaction.commit();
@@ -44,7 +41,7 @@ public class ServizioDao {
     public Servizio findServizioById(String id) {
         Servizio cercato = entityManager.find(Servizio.class, UUID.fromString(id));
         if (cercato == null) {
-            throw new RuntimeException("Nessun servizio trovato.");
+            throw new RuntimeException("Non è stato trovato alcun servizio.");
         }
         return cercato;
     }

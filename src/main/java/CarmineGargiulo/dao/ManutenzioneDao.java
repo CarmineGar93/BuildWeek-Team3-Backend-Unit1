@@ -20,7 +20,6 @@ public class ManutenzioneDao {
         EntityTransaction transaction = entityManager.getTransaction();
         transaction.begin();
 
-
         VeicoloPubblico veicolo = manutenzione.getVeicoloPubblico();
 
         if (veicolo.isInServizio()) {
@@ -29,8 +28,6 @@ public class ManutenzioneDao {
 
         veicolo.setInManutenzione(true);
         veicolo.setInServizio(false);
-
-        entityManager.merge(veicolo);
 
         entityManager.persist(manutenzione);
         transaction.commit();
