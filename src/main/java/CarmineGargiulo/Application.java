@@ -14,7 +14,6 @@ public class Application {
     private static final EntityManagerFactory emf = Persistence.createEntityManagerFactory("azienda-trasporti");
     private static final Faker faker = new Faker(Locale.ITALY);
     public static void main(String[] args) {
-        System.out.println("Hello World!!");
         EntityManager em = emf.createEntityManager();
         PuntoVenditaDAO puntoVenditaDAO = new PuntoVenditaDAO(em);
         inizializzaDb(puntoVenditaDAO);
