@@ -15,15 +15,14 @@ public class ServizioDao {
     public void salvaServizio(Servizio servizio) {
         EntityTransaction transaction = entityManager.getTransaction();
         transaction.begin();
-
-        VeicoloPubblico veicolo = servizio.getVeicoloPubblico();
-
-        veicolo.setNumeroServizi(veicolo.getNumeroServizi() + 1);
-
-        entityManager.merge(veicolo);
         entityManager.persist(servizio);
         transaction.commit();
-        System.out.println("Il servizio " + servizio.getServizio_id() + " è stato salvato correttamente.");
+    }
+
+    public long contaServiziPerVeicolo(VeicoloPubblico veicolo) {
+        return entityManager.createQuery(
+                        "SELECT COUNT(s) FROM Servizio s WHERE s.veicoloPubblico = :veicolo", Long.class)
+                .setParameter("veicolo", veicolo)
+                .getSingleResult();
     }
 }
-

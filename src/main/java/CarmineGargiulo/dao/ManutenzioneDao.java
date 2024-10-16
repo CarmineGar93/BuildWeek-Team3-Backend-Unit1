@@ -15,14 +15,14 @@ public class ManutenzioneDao {
     public void salvaManutenzione(Manutenzione manutenzione) {
         EntityTransaction transaction = entityManager.getTransaction();
         transaction.begin();
-
-        VeicoloPubblico veicolo = manutenzione.getVeicoloPubblico();
-
-        veicolo.setNumeroManutenzioni(veicolo.getNumeroManutenzioni() + 1);
-
-        entityManager.merge(veicolo);
         entityManager.persist(manutenzione);
         transaction.commit();
-        System.out.println("La manutenzione " + manutenzione.getManutenzioneId() + " è stata salvata correttamente.");
+    }
+
+    public long contaManutenzioniPerVeicolo(VeicoloPubblico veicolo) {
+        return entityManager.createQuery(
+                        "SELECT COUNT(m) FROM Manutenzione m WHERE m.veicoloPubblico = :veicolo", Long.class)
+                .setParameter("veicolo", veicolo)
+                .getSingleResult();
     }
 }

@@ -34,7 +34,6 @@ public class Application {
 
         generaStoricoVeicoli(veicoloDAO, manutenzioneDao, servizioDao, tratteDao);
 
-        // Chiudi l'EntityManager e la Factory
         em.close();
         emf.close();
     }
@@ -62,10 +61,12 @@ public class Application {
             }
         }
 
-        if (tratteDao.ottieniListaTratte().isEmpty()) {
-            for (int i = 0; i < 5; i++) {
+        List<Tratta> tratteEsistenti = tratteDao.ottieniListaTratte();
+        if (tratteEsistenti.size() < 12) {
+            int tratteDaAggiungere = 12 - tratteEsistenti.size();
+            for (int i = 0; i < tratteDaAggiungere; i++) {
                 Tratta tratta = new Tratta(
-                        "Linea " + (i + 1),
+                        "Linea " + (tratteEsistenti.size() + i + 1),
                         faker.address().cityName(),
                         faker.address().cityName(),
                         faker.number().numberBetween(20, 60)
@@ -178,32 +179,50 @@ public class Application {
                 nomeVeicolo = faker.ancient().god();
             } while (!nomiGenerati.add(nomeVeicolo));
 
-            System.out.println("Gestione dello storico per il veicolo: " + nomeVeicolo + " con targa: " + veicolo.getTarga());
+            long manutenzioniPresenti = manutenzioneDao.contaManutenzioniPerVeicolo(veicolo);
+            long serviziPresenti = servizioDao.contaServiziPerVeicolo(veicolo);
 
-            for (int i = 0; i < numeroManutenzioni[index]; i++) {
-                Manutenzione manutenzione = new Manutenzione(
-                        LocalDate.now().minusMonths(faker.random().nextInt(1, 12)),
-                        LocalDate.now().minusMonths(faker.random().nextInt(1, 6)),
-                        TipoManutenzione.values()[faker.random().nextInt(TipoManutenzione.values().length)],
-                        veicolo
-                );
-                manutenzioneDao.salvaManutenzione(manutenzione);
+            boolean manutenzioniAggiornate = false;
+            boolean serviziAggiornati = false;
+
+            if (manutenzioniPresenti < numeroManutenzioni[index]) {
+                int manutenzioniDaCreare = numeroManutenzioni[index] - (int) manutenzioniPresenti;
+                for (int i = 0; i < manutenzioniDaCreare; i++) {
+                    Manutenzione manutenzione = new Manutenzione(
+                            LocalDate.now().minusMonths(faker.random().nextInt(1, 12)),
+                            LocalDate.now().minusMonths(faker.random().nextInt(1, 6)),
+                            TipoManutenzione.values()[faker.random().nextInt(TipoManutenzione.values().length)],
+                            veicolo
+                    );
+                    manutenzioneDao.salvaManutenzione(manutenzione);
+                }
+                manutenzioniAggiornate = true;
             }
 
-            for (int j = 0; j < numeroServizi[index]; j++) {
-                Tratta trattaRandom = tratte.get(faker.random().nextInt(tratte.size()));
-                Servizio servizio = new Servizio(
-                        LocalDate.now().minusMonths(faker.random().nextInt(1, 12)),
-                        LocalDate.now().minusMonths(faker.random().nextInt(1, 6)),
-                        veicolo,
-                        trattaRandom
-                );
-                servizioDao.salvaServizio(servizio);
+            if (serviziPresenti < numeroServizi[index]) {
+                int serviziDaCreare = numeroServizi[index] - (int) serviziPresenti;
+                Tratta trattaAssociata = tratte.get(index % tratte.size());
+                for (int j = 0; j < serviziDaCreare; j++) {
+                    Servizio servizio = new Servizio(
+                            LocalDate.now().minusMonths(faker.random().nextInt(1, 12)),
+                            LocalDate.now().minusMonths(faker.random().nextInt(1, 6)),
+                            veicolo,
+                            trattaAssociata
+                    );
+                    servizioDao.salvaServizio(servizio);
+                }
+                serviziAggiornati = true;
+            }
+
+            if (!manutenzioniAggiornate && !serviziAggiornati) {
+                System.out.println("Lo storico per il veicolo con targa " + veicolo.getTarga() + " è già stato salvato.");
+            } else {
+                System.out.println("Le nuove manutenzioni e servizi per il veicolo con targa " + veicolo.getTarga() + " sono stati salvati.");
             }
 
             index++;
         }
 
-        System.out.println("Dati di manutenzione e servizi per i veicoli sono stati salvati nel database.");
+        System.out.println("\nControllo e generazione dei dati di manutenzione e servizi completato.");
     }
 }
