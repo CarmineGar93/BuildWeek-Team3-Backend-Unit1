@@ -9,6 +9,7 @@ import CarmineGargiulo.dao.VeicoloDAO;
 import CarmineGargiulo.dao.TratteDao;
 import CarmineGargiulo.enums.TipoVeicolo;
 import CarmineGargiulo.exceptions.AbbonamentoDateException;
+import CarmineGargiulo.exceptions.EmptyListException;
 import com.github.javafaker.Faker;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
@@ -32,7 +33,13 @@ public class Application {
         TitoloViaggioDao titoloViaggioDao = new TitoloViaggioDao(em);
         VeicoloDAO veicoloDAO = new VeicoloDAO(em);
         inizializzaDb(puntoVenditaDAO, st, utenteDao, tessereDAO, titoloViaggioDao, veicoloDAO);
+        PuntoVendita puntoVenditafromDb = puntoVenditaDAO.findPuntoVenditaById("94fbdfcc-665a-478c-a6b7-756e0abde97e");
+        try{
+            titoloViaggioDao.getAllTitoliViaggioPerPuntoVendita(puntoVenditafromDb).forEach(System.out::println);
 
+        }catch (EmptyListException e){
+            System.out.println(e.getMessage());
+        }
 
         em.close();
         emf.close();

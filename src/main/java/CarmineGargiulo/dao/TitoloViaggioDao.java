@@ -1,9 +1,12 @@
 package CarmineGargiulo.dao;
 
 import CarmineGargiulo.entities.Abbonamento;
+import CarmineGargiulo.entities.PuntoVendita;
 import CarmineGargiulo.entities.Tessera;
 import CarmineGargiulo.entities.TitoloViaggio;
 import CarmineGargiulo.exceptions.AbbonamentoDateException;
+import CarmineGargiulo.exceptions.EmptyListException;
+import CarmineGargiulo.exceptions.NotFoundException;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.TypedQuery;
@@ -39,7 +42,7 @@ public class TitoloViaggioDao {
 
     public TitoloViaggio findTitoloViaggioById(String id){
         TitoloViaggio cercato = entityManager.find(TitoloViaggio.class, UUID.fromString(id));
-        if(cercato == null) throw new RuntimeException(); //TODO creare eccezione
+        if(cercato == null) throw new NotFoundException("titolo viaggio", "id");
         return cercato;
     }
 
@@ -47,5 +50,13 @@ public class TitoloViaggioDao {
         TypedQuery<Abbonamento> query = entityManager.createQuery("SELECT a FROM Abbonamento a WHERE a.tessera = :tessera", Abbonamento.class);
         query.setParameter("tessera", tessera);
         return query.getResultList();
+    }
+
+    public List<TitoloViaggio> getAllTitoliViaggioPerPuntoVendita(PuntoVendita puntoVendita){
+        TypedQuery<TitoloViaggio> query = entityManager.createQuery("SELECT t FROM TitoloViaggio t WHERE t.puntoVendita = :puntoVendita", TitoloViaggio.class);
+        query.setParameter("puntoVendita", puntoVendita);
+        List<TitoloViaggio> result = query.getResultList();
+        if(result.isEmpty()) throw new EmptyListException();
+        return result;
     }
 }
