@@ -59,7 +59,7 @@ public class TitoloViaggioDao {
 
     public List<TitoloViaggio> getAllTitoliViaggioPerPeriodo(int giorni){
         TypedQuery<TitoloViaggio> query = entityManager.createQuery("SELECT t FROM TitoloViaggio t WHERE t.dataAcquisto > :date", TitoloViaggio.class);
-        query.setParameter("date", LocalDate.now());
+        query.setParameter("date", LocalDate.now().minusDays(giorni));
         List<TitoloViaggio> result = query.getResultList();
         if(result.isEmpty()) throw new EmptyListException();
         return result;
@@ -71,7 +71,7 @@ public class TitoloViaggioDao {
         if(biglietto1.isConvalidato()) throw new BigliettoGiaConvalidatoException();
         biglietto1.setConvalidato(true);
         biglietto1.setVeicoloPubblico(veicoloPubblico);
-        biglietto1.setDataConvalidazione(LocalDate.now().minusDays(50));
+        biglietto1.setDataConvalidazione(LocalDate.now());
         EntityTransaction transaction = entityManager.getTransaction();
         transaction.begin();
         entityManager.persist(biglietto1);
