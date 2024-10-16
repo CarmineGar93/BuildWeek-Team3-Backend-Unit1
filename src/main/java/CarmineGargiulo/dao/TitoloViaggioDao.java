@@ -2,6 +2,7 @@ package CarmineGargiulo.dao;
 
 import CarmineGargiulo.entities.*;
 import CarmineGargiulo.exceptions.AbbonamentoDateException;
+import CarmineGargiulo.exceptions.BigliettoGiaConvalidatoException;
 import CarmineGargiulo.exceptions.EmptyListException;
 import CarmineGargiulo.exceptions.NotFoundException;
 import jakarta.persistence.EntityManager;
@@ -64,6 +65,21 @@ public class TitoloViaggioDao {
         List<TitoloViaggio> result = query.getResultList();
         if(result.isEmpty()) throw new EmptyListException();
         return result;
+    }
+
+    public void obliteraBiglietto(String bigliettoId, VeicoloPubblico veicoloPubblico){
+        Biglietto biglietto1 = entityManager.find(Biglietto.class, UUID.fromString(bigliettoId));
+        if(biglietto1 == null) throw new NotFoundException("biglietto", "id");
+        if(biglietto1.isConvalidato()) throw new BigliettoGiaConvalidatoException();
+        biglietto1.setConvalidato(true);
+        biglietto1.setVeicoloPubblico(veicoloPubblico);
+        EntityTransaction transaction = entityManager.getTransaction();
+        transaction.begin();
+        entityManager.persist(biglietto1);
+        transaction.commit();
+        System.out.println("Biglietto " + biglietto1.getTitoloViaggio_id() + " convalidato corretamente" );
+
+
     }
 
 }
