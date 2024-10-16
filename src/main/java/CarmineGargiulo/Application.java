@@ -232,8 +232,7 @@ public class Application {
 
         if(servizioDao.controlloServiziAttivi().isEmpty()){
             for (int i = 0; i < 6; i++) {
-                Servizio servizio = new Servizio(veicoli.get(i), tratte.get(i));
-                servizioDao.mettiInServizio(servizio);
+                servizioDao.mettiInServizio(veicoli.get(i), tratte.get(i));
             }
         }
     }
