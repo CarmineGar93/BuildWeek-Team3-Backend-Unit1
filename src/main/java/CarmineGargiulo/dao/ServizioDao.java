@@ -6,7 +6,9 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.TypedQuery;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public class ServizioDao {
@@ -65,11 +67,12 @@ public class ServizioDao {
         if(veicoloPubblico.isInManutenzione()) throw new RuntimeException(); // TODO CREARE ECCEZIONE VEICOLO IN MANUTENZIONE
         if(!veicoloPubblico.isInServizio()) throw new RuntimeException(); // TODO CREARE ECCEZIONE VEICOLO GIà FUORI SERVIZIO
         veicoloPubblico.setInServizio(false);
-        veicoloPubblico.
+        Optional<Servizio> ricerca = veicoloPubblico.getServiziList().stream().filter(servizio -> servizio.getDataFine() == null).findFirst();
+        ricerca.ifPresent(servizio -> servizio.setDataFine(LocalDate.now()));
         EntityTransaction transaction = entityManager.getTransaction();
         transaction.begin();
-        entityManager.persist(servizio);
+        entityManager.persist(veicoloPubblico);
         transaction.commit();
-        System.out.println("Il servizio " + servizio.getServizio_id() + " è stato salvato correttamente.");
+        System.out.println("Il veicolo " + veicoloPubblico.getTarga() + " è stato fermato");
     }
 }
