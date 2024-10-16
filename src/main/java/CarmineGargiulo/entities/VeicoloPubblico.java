@@ -13,20 +13,21 @@ public class VeicoloPubblico {
     @GeneratedValue
     @Column(name = "veicolo_id")
     private UUID veicoloId;
+
     @Column(unique = true, nullable = false)
     private String targa;
+
     private int capienza;
+
     @Column(name = "in_servizio")
     private boolean inServizio = false;
+
     @Column(name = "in_manutenzione")
     private boolean inManutenzione = false;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "tipo_veicolo")
     private TipoVeicolo tipoVeicolo;
-    @Column(name = "numero_manutenzioni", nullable = false)
-    private int numeroManutenzioni = 0;
-    @Column(name = "numero_servizi", nullable = false)
-    private int numeroServizi = 0;
 
     public VeicoloPubblico() {
     }
@@ -77,28 +78,12 @@ public class VeicoloPubblico {
         this.tipoVeicolo = tipoVeicolo;
     }
 
-    public int getNumeroManutenzioni() {
-        return numeroManutenzioni;
-    }
-
-    public void setNumeroManutenzioni(int numeroManutenzioni) {
-        this.numeroManutenzioni = numeroManutenzioni;
-    }
-
-    public int getNumeroServizi() {
-        return numeroServizi;
-    }
-
-    public void setNumeroServizi(int numeroServizi) {
-        this.numeroServizi = numeroServizi;
-    }
-
     @Override
     public String toString() {
         return "VeicoloPubblico = targa: " + targa +
                 ", capienza: " + capienza +
-                ", numeroManutenzioni: " + numeroManutenzioni +
-                ", numeroServizi: " + numeroServizi +
+                ", inServizio: " + inServizio +
+                ", inManutenzione: " + inManutenzione +
                 ", tipoVeicolo: " + tipoVeicolo;
     }
 }

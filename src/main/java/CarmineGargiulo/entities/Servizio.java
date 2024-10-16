@@ -12,19 +12,15 @@ public class Servizio {
     @GeneratedValue
     @Column(name = "servizio_id")
     private UUID servizioId;
-
     @Column(name = "data_inizio")
     private LocalDate dataInizio;
-
     @Column(name = "data_fine")
     private LocalDate dataFine;
-
     @ManyToOne
-    @JoinColumn(name = "veicolo_id", nullable = false)
+    @JoinColumn(name = "veicolo_id")
     private VeicoloPubblico veicoloPubblico;
-
     @ManyToOne
-    @JoinColumn(name = "tratta_id", nullable = false)
+    @JoinColumn(name = "tratta_id")
     private Tratta tratta;
 
     public Servizio() {

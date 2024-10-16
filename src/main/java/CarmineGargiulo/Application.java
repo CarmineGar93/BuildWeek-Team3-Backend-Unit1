@@ -62,8 +62,8 @@ public class Application {
         }
 
         List<Tratta> tratteEsistenti = tratteDao.ottieniListaTratte();
-        if (tratteEsistenti.size() < 12) {
-            int tratteDaAggiungere = 12 - tratteEsistenti.size();
+        if (tratteEsistenti.size() < 6) {
+            int tratteDaAggiungere = 6 - tratteEsistenti.size();
             for (int i = 0; i < tratteDaAggiungere; i++) {
                 Tratta tratta = new Tratta(
                         "Linea " + (tratteEsistenti.size() + i + 1),
@@ -169,8 +169,8 @@ public class Application {
             return;
         }
 
-        int[] numeroManutenzioni = {94, 216, 59, 53, 199, 314, 412, 206, 257, 173, 393, 70};
-        int[] numeroServizi = {495, 218, 465, 154, 217, 246, 475, 457, 328, 66, 232, 363};
+        int[] numeroManutenzioni = {4, 6, 9, 3, 9, 4, 2, 6, 7, 3, 3, 7};
+        int[] numeroServizi = {5, 8, 5, 4, 7, 6, 5, 7, 8, 6, 3, 3};
 
         int index = 0;
         for (VeicoloPubblico veicolo : veicoli) {
