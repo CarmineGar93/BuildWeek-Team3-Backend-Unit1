@@ -1,13 +1,16 @@
 package CarmineGargiulo.dao;
 
 import CarmineGargiulo.entities.Biglietto;
+import CarmineGargiulo.entities.Tessera;
 import CarmineGargiulo.entities.TitoloViaggio;
 import CarmineGargiulo.entities.VeicoloPubblico;
 import CarmineGargiulo.exceptions.EmptyListException;
+import CarmineGargiulo.exceptions.NotFoundException;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 
 import java.util.List;
+import java.util.UUID;
 
 public class VeicoloDAO {
     private final EntityManager entityManager;
@@ -21,6 +24,12 @@ public class VeicoloDAO {
         entityManager.merge(veicoloPubblico);
         entityManager.getTransaction().commit();
         System.out.println("Il veicolo " + veicoloPubblico.getTarga() + " salvato correttamente");
+    }
+
+    public VeicoloPubblico findVeicoloById(String id){
+        VeicoloPubblico cercato = entityManager.find(VeicoloPubblico.class, UUID.fromString(id));
+        if(cercato == null) throw new NotFoundException("veicolo", "id");
+        return cercato;
     }
 
     public List<VeicoloPubblico> ottieniListaVeicoli() {

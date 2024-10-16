@@ -15,7 +15,7 @@ public class Manutenzione {
     private UUID manutenzioneId;
     @Column(name = "data_inizio", nullable = false)
     private LocalDate dataInizio;
-    @Column(name = "data_fine", nullable = false)
+
     private LocalDate dataFine;
     @Column(name = "tipo_manutenzione")
     @Enumerated(EnumType.STRING)

@@ -34,6 +34,9 @@ public class Application {
 
         generaStoricoVeicoli(veicoloDAO, manutenzioneDao, servizioDao, tratteDao);
 
+        VeicoloPubblico veicoloPubblicofromDb = veicoloDAO.findVeicoloById("6f323736-f760-4fb8-9036-63e0e5fab094");
+        manutenzioneDao.terminaManutenzione(veicoloPubblicofromDb);
+
         em.close();
         emf.close();
     }

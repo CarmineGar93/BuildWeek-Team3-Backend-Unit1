@@ -1,6 +1,7 @@
 package CarmineGargiulo.dao;
 
 import CarmineGargiulo.entities.Servizio;
+import CarmineGargiulo.entities.Tratta;
 import CarmineGargiulo.entities.VeicoloPubblico;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
@@ -51,11 +52,12 @@ public class ServizioDao {
         return query.getResultList();
     }
 
-    public void mettiInServizio(Servizio servizio){
-        if(servizio.getVeicoloPubblico().isInManutenzione()) throw new RuntimeException(); // TODO CREARE ECCEZIONE VEICOLO IN MANUTENZIONE
-        if(servizio.getVeicoloPubblico().isInServizio()) throw new RuntimeException(); // TODO CREARE ECCEZIONE VEICOLO GIA IN SERVIZIO
-        if(servizio.getTratta().getServiziList().stream().anyMatch(servizio1 -> servizio1.getDataFine() == null)) throw new RuntimeException(); // TODO CREARE ECCEZIONE TRATTA GIA PERCORSA DA UN ALTRO VEICOLO
-        servizio.getVeicoloPubblico().setInServizio(true);
+    public void mettiInServizio(VeicoloPubblico veicoloPubblico, Tratta tratta){
+        if(veicoloPubblico.isInManutenzione()) throw new RuntimeException(); // TODO CREARE ECCEZIONE VEICOLO IN MANUTENZIONE
+        if(veicoloPubblico.isInServizio()) throw new RuntimeException(); // TODO CREARE ECCEZIONE VEICOLO GIA IN SERVIZIO
+        if(tratta.getServiziList().stream().anyMatch(servizio1 -> servizio1.getDataFine() == null)) throw new RuntimeException(); // TODO CREARE ECCEZIONE TRATTA GIA PERCORSA DA UN ALTRO VEICOLO
+        veicoloPubblico.setInServizio(true);
+        Servizio servizio = new Servizio(veicoloPubblico, tratta);
         EntityTransaction transaction = entityManager.getTransaction();
         transaction.begin();
         entityManager.persist(servizio);
@@ -63,7 +65,7 @@ public class ServizioDao {
         System.out.println("Il servizio " + servizio.getServizio_id() + " è stato salvato correttamente.");
     }
 
-    public void fuoriServizio(VeicoloPubblico veicoloPubblico){
+    public void mettiFuoriServizio(VeicoloPubblico veicoloPubblico){
         if(veicoloPubblico.isInManutenzione()) throw new RuntimeException(); // TODO CREARE ECCEZIONE VEICOLO IN MANUTENZIONE
         if(!veicoloPubblico.isInServizio()) throw new RuntimeException(); // TODO CREARE ECCEZIONE VEICOLO GIà FUORI SERVIZIO
         veicoloPubblico.setInServizio(false);
