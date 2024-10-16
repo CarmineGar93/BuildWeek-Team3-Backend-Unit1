@@ -15,7 +15,7 @@ public class VeicoloDAO {
 
     public void salvaVeicolo(VeicoloPubblico veicoloPubblico) {
         entityManager.getTransaction().begin();
-        entityManager.persist(veicoloPubblico);
+        entityManager.merge(veicoloPubblico);
         entityManager.getTransaction().commit();
         System.out.println("Il veicolo " + veicoloPubblico.getTarga() + " salvato correttamente");
     }
@@ -25,15 +25,17 @@ public class VeicoloDAO {
         return query.getResultList();
     }
 
-    public List<VeicoloPubblico> ottieniVeicoliInManutenzione() {
-        TypedQuery<VeicoloPubblico> query = entityManager.createQuery(
-                "SELECT v FROM VeicoloPubblico v WHERE v.inManutenzione = true", VeicoloPubblico.class);
-        return query.getResultList();
+    public boolean hasManutenzioni(VeicoloPubblico veicolo) {
+        TypedQuery<Long> query = entityManager.createQuery(
+                "SELECT COUNT(m) FROM Manutenzione m WHERE m.veicoloPubblico = :veicolo", Long.class);
+        query.setParameter("veicolo", veicolo);
+        return query.getSingleResult() > 0;
     }
 
-    public List<VeicoloPubblico> ottieniVeicoliInServizio() {
-        TypedQuery<VeicoloPubblico> query = entityManager.createQuery(
-                "SELECT v FROM VeicoloPubblico v WHERE v.inServizio = true", VeicoloPubblico.class);
-        return query.getResultList();
+    public boolean hasServizi(VeicoloPubblico veicolo) {
+        TypedQuery<Long> query = entityManager.createQuery(
+                "SELECT COUNT(s) FROM Servizio s WHERE s.veicoloPubblico = :veicolo", Long.class);
+        query.setParameter("veicolo", veicolo);
+        return query.getSingleResult() > 0;
     }
 }

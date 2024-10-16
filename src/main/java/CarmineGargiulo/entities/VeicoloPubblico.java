@@ -38,7 +38,7 @@ public class VeicoloPubblico {
     public VeicoloPubblico(String targa, TipoVeicolo tipoVeicolo) {
         this.targa = targa;
         this.tipoVeicolo = tipoVeicolo;
-        if(tipoVeicolo == TipoVeicolo.AUTOBUS) capienza = 70;
+        if (tipoVeicolo == TipoVeicolo.AUTOBUS) capienza = 70;
         else capienza = 150;
     }
 

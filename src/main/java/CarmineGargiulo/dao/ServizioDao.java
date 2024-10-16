@@ -18,22 +18,23 @@ public class ServizioDao {
 
     public void salvaServizio(Servizio servizio) {
         EntityTransaction transaction = entityManager.getTransaction();
-        transaction.begin();
+        try {
+            transaction.begin();
+            VeicoloPubblico veicolo = servizio.getVeicoloPubblico();
 
-        VeicoloPubblico veicolo = servizio.getVeicoloPubblico();
+            if (veicolo.isInManutenzione()) {
+                throw new RuntimeException("Il veicolo " + veicolo.getTarga() + " è attualmente in manutenzione.");
+            }
 
-
-        if (veicolo.isInManutenzione()) {
-            throw new RuntimeException("Il veicolo " + veicolo.getTarga() + " è attualmente in manutenzione.");
+            veicolo.setInServizio(true);
+            entityManager.merge(veicolo);
+            entityManager.persist(servizio);
+            transaction.commit();
+            System.out.println("Il servizio " + servizio.getServizio_id() + " è stato salvato correttamente.");
+        } catch (RuntimeException e) {
+            transaction.rollback();
+            e.printStackTrace(); // Aggiunto per controllare se ci sono rollback infiniti magari bloccati da un eccezione
         }
-
-        veicolo.setInServizio(true);
-
-        entityManager.merge(veicolo);
-
-        entityManager.persist(servizio);
-        transaction.commit();
-        System.out.println("Il servizio " + servizio.getServizio_id() + " è stato salvato correttamente.");
     }
 
     public List<Servizio> ottieniListaServizi() {
