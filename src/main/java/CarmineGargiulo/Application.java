@@ -34,6 +34,13 @@ public class Application {
 
         generaStoricoVeicoli(veicoloDAO, manutenzioneDao, servizioDao, tratteDao);
 
+
+        List<VeicoloPubblico> veicoli = veicoloDAO.ottieniListaVeicoli();
+        if (!veicoli.isEmpty()) {
+            VeicoloPubblico veicoloSelezionato = veicoli.get(3); // vado a prendere lo storico del veicolo che sta all indice 0
+            veicoloDAO.getStoricoVeicolo(veicoloSelezionato);
+        }
+
         em.close();
         emf.close();
     }
@@ -222,7 +229,5 @@ public class Application {
 
             index++;
         }
-
-        System.out.println("\nControllo e generazione dei dati di manutenzione e servizi completato.");
     }
 }
