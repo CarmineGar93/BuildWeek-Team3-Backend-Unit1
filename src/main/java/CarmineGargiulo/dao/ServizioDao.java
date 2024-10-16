@@ -1,12 +1,15 @@
 package CarmineGargiulo.dao;
 
 import CarmineGargiulo.entities.Servizio;
+import CarmineGargiulo.entities.Tratta;
 import CarmineGargiulo.entities.VeicoloPubblico;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.TypedQuery;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public class ServizioDao {
@@ -19,18 +22,6 @@ public class ServizioDao {
     public void salvaServizio(Servizio servizio) {
         EntityTransaction transaction = entityManager.getTransaction();
         transaction.begin();
-
-        VeicoloPubblico veicolo = servizio.getVeicoloPubblico();
-
-
-        if (veicolo.isInManutenzione()) {
-            throw new RuntimeException("Il veicolo " + veicolo.getTarga() + " è attualmente in manutenzione.");
-        }
-
-        veicolo.setInServizio(true);
-
-        entityManager.merge(veicolo);
-
         entityManager.persist(servizio);
         transaction.commit();
         System.out.println("Il servizio " + servizio.getServizio_id() + " è stato salvato correttamente.");
@@ -54,5 +45,36 @@ public class ServizioDao {
                         "SELECT COUNT(s) FROM Servizio s WHERE s.veicoloPubblico = :veicolo", Long.class)
                 .setParameter("veicolo", veicolo)
                 .getSingleResult();
+    }
+
+    public List<Servizio> controlloServiziAttivi(){
+        TypedQuery<Servizio> query = entityManager.createQuery("SELECT s FROM Servizio s WHERE s.dataFine IS NULL", Servizio.class);
+        return query.getResultList();
+    }
+
+    public void mettiInServizio(VeicoloPubblico veicoloPubblico, Tratta tratta){
+        if(veicoloPubblico.isInManutenzione()) throw new RuntimeException(); // TODO CREARE ECCEZIONE VEICOLO IN MANUTENZIONE
+        if(veicoloPubblico.isInServizio()) throw new RuntimeException(); // TODO CREARE ECCEZIONE VEICOLO GIA IN SERVIZIO
+        if(tratta.getServiziList().stream().anyMatch(servizio1 -> servizio1.getDataFine() == null)) throw new RuntimeException(); // TODO CREARE ECCEZIONE TRATTA GIA PERCORSA DA UN ALTRO VEICOLO
+        veicoloPubblico.setInServizio(true);
+        Servizio servizio = new Servizio(veicoloPubblico, tratta);
+        EntityTransaction transaction = entityManager.getTransaction();
+        transaction.begin();
+        entityManager.persist(servizio);
+        transaction.commit();
+        System.out.println("Il servizio " + servizio.getServizio_id() + " è stato salvato correttamente.");
+    }
+
+    public void mettiFuoriServizio(VeicoloPubblico veicoloPubblico){
+        if(veicoloPubblico.isInManutenzione()) throw new RuntimeException(); // TODO CREARE ECCEZIONE VEICOLO IN MANUTENZIONE
+        if(!veicoloPubblico.isInServizio()) throw new RuntimeException(); // TODO CREARE ECCEZIONE VEICOLO GIà FUORI SERVIZIO
+        veicoloPubblico.setInServizio(false);
+        Optional<Servizio> ricerca = veicoloPubblico.getServiziList().stream().filter(servizio -> servizio.getDataFine() == null).findFirst();
+        ricerca.ifPresent(servizio -> servizio.setDataFine(LocalDate.now()));
+        EntityTransaction transaction = entityManager.getTransaction();
+        transaction.begin();
+        entityManager.persist(veicoloPubblico);
+        transaction.commit();
+        System.out.println("Il veicolo " + veicoloPubblico.getTarga() + " è stato fermato");
     }
 }
