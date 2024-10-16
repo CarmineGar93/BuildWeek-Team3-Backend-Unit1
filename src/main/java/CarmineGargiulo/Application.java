@@ -38,6 +38,8 @@ public class Application {
         emf.close();
     }
 
+
+
     public static void inizializzaDb(
             PuntoVenditaDAO puntoVenditaDAO,
             TratteDao tratteDao,
@@ -224,5 +226,28 @@ public class Application {
         }
 
         System.out.println("\nControllo e generazione dei dati di manutenzione e servizi completato.");
+
+        for (VeicoloPubblico veicolo : veicoli) {
+
+            List<Manutenzione> manutenzioni = manutenzioneDao.ottieniListaManutenzioni(veicolo);
+
+            if (manutenzioni.isEmpty()) {
+                System.out.println("   ");
+                System.out.println("Non è presente nessuna manutenzione per il veicolo: " + veicolo.getVeicoloId());
+            } else {
+
+                System.out.println("   ");
+                System.out.println("Manutenzioni per il veicolo: " + veicolo.getVeicoloId());
+                for (Manutenzione manutenzione : manutenzioni) {
+                    System.out.println(manutenzione.getTipoManutenzione() + " dal "
+                            + manutenzione.getDataInizio() + " al " + manutenzione.getDataFine());
+                }
+            }
+        }
     }
+
+
+
+
+
 }
