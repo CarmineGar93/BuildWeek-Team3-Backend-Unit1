@@ -34,6 +34,7 @@ public class Application {
         inizializzaDb(puntoVenditaDAO, st, utenteDao, tessereDAO, titoloViaggioDao, veicoloDAO);
 
 
+
         em.close();
         emf.close();
     }
@@ -82,7 +83,7 @@ public class Application {
            List<PuntoVendita> puntoVenditaList = puntoVenditaDAO.ottieniListaPuntiVendita();
            List<Tessera> tesseraList = tessereDAO.ottieniListaTessere();
            List<TipoAbbonamento> tipiList = Arrays.stream(TipoAbbonamento.values()).toList();
-           for (int i = 0; i < 10; i++) {
+           for (int i = 0; i < 20; i++) {
                boolean random = faker.random().nextBoolean();
                PuntoVendita puntoRandom;
                while (true) {

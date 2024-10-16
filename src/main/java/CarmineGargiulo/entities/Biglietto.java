@@ -9,6 +9,7 @@ import java.time.LocalDate;
 public class Biglietto extends TitoloViaggio{
     @Column(nullable = false)
     private boolean convalidato = false;
+    private LocalDate dataConvalidazione;
     @ManyToOne
     @JoinColumn(name = "veicolo_convalidazione_id")
     private VeicoloPubblico veicoloPubblico;
@@ -19,6 +20,14 @@ public class Biglietto extends TitoloViaggio{
 
     public Biglietto(double prezzoViaggio, LocalDate dataAcquisto, PuntoVendita puntoVendita) {
         super(prezzoViaggio, dataAcquisto, puntoVendita);
+    }
+
+    public LocalDate getDataConvalidazione() {
+        return dataConvalidazione;
+    }
+
+    public void setDataConvalidazione(LocalDate dataConvalidazione) {
+        this.dataConvalidazione = dataConvalidazione;
     }
 
     public boolean isConvalidato() {
