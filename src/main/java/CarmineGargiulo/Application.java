@@ -34,7 +34,6 @@ public class Application {
         inizializzaDb(puntoVenditaDAO, st, utenteDao, tessereDAO, titoloViaggioDao, veicoloDAO);
 
 
-
         em.close();
         emf.close();
     }

@@ -1,10 +1,7 @@
 package CarmineGargiulo.dao;
 
 import CarmineGargiulo.entities.*;
-import CarmineGargiulo.exceptions.AbbonamentoDateException;
-import CarmineGargiulo.exceptions.BigliettoGiaConvalidatoException;
-import CarmineGargiulo.exceptions.EmptyListException;
-import CarmineGargiulo.exceptions.NotFoundException;
+import CarmineGargiulo.exceptions.*;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.TypedQuery;
@@ -22,6 +19,7 @@ public class TitoloViaggioDao {
 
     public void salvaTitoloViaggio(TitoloViaggio titoloViaggio){
         if(titoloViaggio instanceof Abbonamento){
+            if(((Abbonamento) titoloViaggio).getTessera().getDataScadenza().isBefore(LocalDate.now())) throw new TesseraScadutaException();
             List<Abbonamento> abbonamentiList = getAllAbbonamentiByTessera(((Abbonamento) titoloViaggio).getTessera());
             if(!abbonamentiList.isEmpty()){
                 if(abbonamentiList.stream().anyMatch(abbonamento -> ((Abbonamento) titoloViaggio).getDataInizio().isBefore(abbonamento.getDataFine()))) throw new AbbonamentoDateException();
