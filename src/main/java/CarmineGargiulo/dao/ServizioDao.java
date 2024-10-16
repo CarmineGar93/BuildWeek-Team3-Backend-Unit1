@@ -48,4 +48,11 @@ public class ServizioDao {
         }
         return cercato;
     }
+
+    public long contaServiziPerVeicolo(VeicoloPubblico veicolo) {
+        return entityManager.createQuery(
+                        "SELECT COUNT(s) FROM Servizio s WHERE s.veicoloPubblico = :veicolo", Long.class)
+                .setParameter("veicolo", veicolo)
+                .getSingleResult();
+    }
 }

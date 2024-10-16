@@ -9,6 +9,7 @@ import java.time.LocalDate;
 public class Biglietto extends TitoloViaggio{
     @Column(nullable = false)
     private boolean convalidato = false;
+    @Column(name = "data_convalidazione")
     private LocalDate dataConvalidazione;
     @ManyToOne
     @JoinColumn(name = "veicolo_convalidazione_id")

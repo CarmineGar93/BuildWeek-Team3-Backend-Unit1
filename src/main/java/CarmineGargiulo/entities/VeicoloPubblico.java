@@ -3,34 +3,31 @@ package CarmineGargiulo.entities;
 import CarmineGargiulo.enums.TipoVeicolo;
 import jakarta.persistence.*;
 
-import java.util.List;
 import java.util.UUID;
 
 @Entity
 @Table(name = "veicoli_pubblici")
-@NamedQuery(name = "getAllVeicoli", query = "SELECT v FROM VeicoloPubblico v"
-)
+@NamedQuery(name = "getAllVeicoli", query = "SELECT v FROM VeicoloPubblico v")
 public class VeicoloPubblico {
     @Id
     @GeneratedValue
     @Column(name = "veicolo_id")
     private UUID veicoloId;
+
     @Column(unique = true, nullable = false)
     private String targa;
+
     private int capienza;
+
     @Column(name = "in_servizio")
     private boolean inServizio = false;
+
     @Column(name = "in_manutenzione")
     private boolean inManutenzione = false;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "tipo_veicolo")
     private TipoVeicolo tipoVeicolo;
-    @OneToMany(mappedBy = "veicoloPubblico")
-    private List<Manutenzione> manutenzioniList;
-    @OneToMany(mappedBy = "veicoloPubblico")
-    private List<Servizio> serviziList;
-    @OneToMany(mappedBy = "veicoloPubblico")
-    private List<Biglietto> bigliettiList;
 
     public VeicoloPubblico() {
     }
@@ -38,16 +35,7 @@ public class VeicoloPubblico {
     public VeicoloPubblico(String targa, TipoVeicolo tipoVeicolo) {
         this.targa = targa;
         this.tipoVeicolo = tipoVeicolo;
-        if(tipoVeicolo == TipoVeicolo.AUTOBUS) capienza = 70;
-        else capienza = 150;
-    }
-
-    public List<Manutenzione> getManutenzioniList() {
-        return manutenzioniList;
-    }
-
-    public List<Servizio> getServiziList() {
-        return serviziList;
+        this.capienza = tipoVeicolo == TipoVeicolo.AUTOBUS ? 70 : 150;
     }
 
     public UUID getVeicoloId() {
@@ -88,10 +76,6 @@ public class VeicoloPubblico {
 
     public void setTipoVeicolo(TipoVeicolo tipoVeicolo) {
         this.tipoVeicolo = tipoVeicolo;
-    }
-
-    public List<Biglietto> getBigliettiList() {
-        return bigliettiList;
     }
 
     @Override
