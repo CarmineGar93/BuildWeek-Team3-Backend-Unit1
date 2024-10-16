@@ -33,13 +33,8 @@ public class Application {
         TitoloViaggioDao titoloViaggioDao = new TitoloViaggioDao(em);
         VeicoloDAO veicoloDAO = new VeicoloDAO(em);
         inizializzaDb(puntoVenditaDAO, st, utenteDao, tessereDAO, titoloViaggioDao, veicoloDAO);
-        PuntoVendita puntoVenditafromDb = puntoVenditaDAO.findPuntoVenditaById("94fbdfcc-665a-478c-a6b7-756e0abde97e");
-        try{
-            titoloViaggioDao.getAllTitoliViaggioPerPuntoVendita(puntoVenditafromDb).forEach(System.out::println);
-
-        }catch (EmptyListException e){
-            System.out.println(e.getMessage());
-        }
+        Utente utentefromDb = utenteDao.findUtenteById("8c527f22-ac74-4b3b-8b71-f4792253ccae");
+        tessereDAO.verificaValiditaAbbonamento(utentefromDb);
 
         em.close();
         emf.close();

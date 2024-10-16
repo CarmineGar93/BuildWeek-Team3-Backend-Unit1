@@ -1,5 +1,6 @@
 package CarmineGargiulo.dao;
 
+import CarmineGargiulo.entities.Abbonamento;
 import CarmineGargiulo.entities.Tessera;
 import CarmineGargiulo.entities.Utente;
 import CarmineGargiulo.exceptions.NotFoundException;
@@ -48,5 +49,13 @@ public class TessereDAO {
             entityManager.persist(cercata);
             transaction.commit();
         }
+    }
+
+    public boolean verificaValiditaAbbonamento(Utente utente){
+        if (utente.getTessera() == null) throw new NotFoundException("tessera", "utente");
+        TypedQuery<Abbonamento> query = entityManager.createQuery("SELECT a FROM Abbonamento a WHERE a.tessera = :tessera AND a.dataFine > :date ", Abbonamento.class);
+        query.setParameter("tessera", utente.getTessera());
+        query.setParameter("date", LocalDate.now());
+        return !query.getResultList().isEmpty();
     }
 }

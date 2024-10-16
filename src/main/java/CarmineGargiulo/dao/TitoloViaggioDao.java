@@ -1,9 +1,6 @@
 package CarmineGargiulo.dao;
 
-import CarmineGargiulo.entities.Abbonamento;
-import CarmineGargiulo.entities.PuntoVendita;
-import CarmineGargiulo.entities.Tessera;
-import CarmineGargiulo.entities.TitoloViaggio;
+import CarmineGargiulo.entities.*;
 import CarmineGargiulo.exceptions.AbbonamentoDateException;
 import CarmineGargiulo.exceptions.EmptyListException;
 import CarmineGargiulo.exceptions.NotFoundException;
@@ -11,6 +8,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.TypedQuery;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -59,4 +57,6 @@ public class TitoloViaggioDao {
         if(result.isEmpty()) throw new EmptyListException();
         return result;
     }
+
+
 }
