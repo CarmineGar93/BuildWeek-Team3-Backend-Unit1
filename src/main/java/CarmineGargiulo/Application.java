@@ -3,6 +3,7 @@ package CarmineGargiulo;
 import CarmineGargiulo.dao.*;
 import CarmineGargiulo.entities.*;
 import CarmineGargiulo.enums.TipoAbbonamento;
+import CarmineGargiulo.enums.TipoManutenzione;
 import CarmineGargiulo.enums.TipoVeicolo;
 import CarmineGargiulo.exceptions.AbbonamentoDateException;
 import com.github.javafaker.Faker;
@@ -18,7 +19,6 @@ public class Application {
     private static final Faker faker = new Faker(Locale.ITALY);
 
     public static void main(String[] args) {
-
         EntityManager em = emf.createEntityManager();
 
         PuntoVenditaDAO puntoVenditaDAO = new PuntoVenditaDAO(em);
@@ -27,11 +27,14 @@ public class Application {
         TessereDAO tessereDAO = new TessereDAO(em);
         TitoloViaggioDao titoloViaggioDao = new TitoloViaggioDao(em);
         VeicoloDAO veicoloDAO = new VeicoloDAO(em);
+        ManutenzioneDao manutenzioneDao = new ManutenzioneDao(em);
+        ServizioDao servizioDao = new ServizioDao(em);
 
         inizializzaDb(puntoVenditaDAO, tratteDao, utenteDao, tessereDAO, titoloViaggioDao, veicoloDAO);
 
-        generaStoricoVeicoli(veicoloDAO);
+        generaStoricoVeicoli(veicoloDAO, manutenzioneDao, servizioDao, tratteDao);
 
+        // Chiudi l'EntityManager e la Factory
         em.close();
         emf.close();
     }
@@ -150,43 +153,57 @@ public class Application {
         }
     }
 
-    public static void generaStoricoVeicoli(VeicoloDAO veicoloDAO) {
+    public static void generaStoricoVeicoli(
+            VeicoloDAO veicoloDAO,
+            ManutenzioneDao manutenzioneDao,
+            ServizioDao servizioDao,
+            TratteDao tratteDao) {
 
         List<VeicoloPubblico> veicoli = veicoloDAO.ottieniListaVeicoli();
-
+        List<Tratta> tratte = tratteDao.ottieniListaTratte();
         Set<String> nomiGenerati = new HashSet<>();
 
-        List<String> storicoManutenzioni = new ArrayList<>();
-        List<String> storicoServizi = new ArrayList<>();
+        if (tratte.isEmpty()) {
+            System.out.println("Nessuna tratta disponibile per generare servizi. Aggiungi tratte nel database.");
+            return;
+        }
 
+        int[] numeroManutenzioni = {94, 216, 59, 53, 199, 314, 412, 206, 257, 173, 393, 70};
+        int[] numeroServizi = {495, 218, 465, 154, 217, 246, 475, 457, 328, 66, 232, 363};
+
+        int index = 0;
         for (VeicoloPubblico veicolo : veicoli) {
-
-            int numeroManutenzioni = faker.number().numberBetween(50, 500);
-            int numeroServizi = faker.number().numberBetween(50, 500);
-
             String nomeVeicolo;
             do {
                 nomeVeicolo = faker.ancient().god();
             } while (!nomiGenerati.add(nomeVeicolo));
 
-            String risultatoManutenzione = "Il veicolo '" + nomeVeicolo + "' con targa: " + veicolo.getTarga() +
-                    " è stato in manutenzione " + numeroManutenzioni + " volte.";
-            String risultatoServizio = "Il veicolo '" + nomeVeicolo + "' con targa: " + veicolo.getTarga() +
-                    " è stato in servizio " + numeroServizi + " volte.";
+            System.out.println("Gestione dello storico per il veicolo: " + nomeVeicolo + " con targa: " + veicolo.getTarga());
 
-            storicoManutenzioni.add(risultatoManutenzione);
-            storicoServizi.add(risultatoServizio);
+            for (int i = 0; i < numeroManutenzioni[index]; i++) {
+                Manutenzione manutenzione = new Manutenzione(
+                        LocalDate.now().minusMonths(faker.random().nextInt(1, 12)),
+                        LocalDate.now().minusMonths(faker.random().nextInt(1, 6)),
+                        TipoManutenzione.values()[faker.random().nextInt(TipoManutenzione.values().length)],
+                        veicolo
+                );
+                manutenzioneDao.salvaManutenzione(manutenzione);
+            }
+
+            for (int j = 0; j < numeroServizi[index]; j++) {
+                Tratta trattaRandom = tratte.get(faker.random().nextInt(tratte.size()));
+                Servizio servizio = new Servizio(
+                        LocalDate.now().minusMonths(faker.random().nextInt(1, 12)),
+                        LocalDate.now().minusMonths(faker.random().nextInt(1, 6)),
+                        veicolo,
+                        trattaRandom
+                );
+                servizioDao.salvaServizio(servizio);
+            }
+
+            index++;
         }
 
-        // Stampa dei risultati
-        System.out.println("\n Storico Manutenzioni:");
-        for (String storico : storicoManutenzioni) {
-            System.out.println(storico);
-        }
-
-        System.out.println("\nStorico Servizi:");
-        for (String storico : storicoServizi) {
-            System.out.println(storico);
-        }
+        System.out.println("Dati di manutenzione e servizi per i veicoli sono stati salvati nel database.");
     }
 }

@@ -3,13 +3,11 @@ package CarmineGargiulo.entities;
 import CarmineGargiulo.enums.TipoVeicolo;
 import jakarta.persistence.*;
 
-import java.util.List;
 import java.util.UUID;
 
 @Entity
 @Table(name = "veicoli_pubblici")
-@NamedQuery(name = "getAllVeicoli", query = "SELECT v FROM VeicoloPubblico v"
-)
+@NamedQuery(name = "getAllVeicoli", query = "SELECT v FROM VeicoloPubblico v")
 public class VeicoloPubblico {
     @Id
     @GeneratedValue
@@ -25,12 +23,10 @@ public class VeicoloPubblico {
     @Enumerated(EnumType.STRING)
     @Column(name = "tipo_veicolo")
     private TipoVeicolo tipoVeicolo;
-    @OneToMany(mappedBy = "veicoloPubblico")
-    private List<Manutenzione> manutenzioniList;
-    @OneToMany(mappedBy = "veicoloPubblico")
-    private List<Servizio> serviziList;
-    @OneToMany(mappedBy = "veicoloPubblico")
-    private List<Biglietto> bigliettiList;
+    @Column(name = "numero_manutenzioni", nullable = false)
+    private int numeroManutenzioni = 0;
+    @Column(name = "numero_servizi", nullable = false)
+    private int numeroServizi = 0;
 
     public VeicoloPubblico() {
     }
@@ -38,16 +34,7 @@ public class VeicoloPubblico {
     public VeicoloPubblico(String targa, TipoVeicolo tipoVeicolo) {
         this.targa = targa;
         this.tipoVeicolo = tipoVeicolo;
-        if (tipoVeicolo == TipoVeicolo.AUTOBUS) capienza = 70;
-        else capienza = 150;
-    }
-
-    public List<Manutenzione> getManutenzioniList() {
-        return manutenzioniList;
-    }
-
-    public List<Servizio> getServiziList() {
-        return serviziList;
+        this.capienza = tipoVeicolo == TipoVeicolo.AUTOBUS ? 70 : 150;
     }
 
     public UUID getVeicoloId() {
@@ -90,16 +77,28 @@ public class VeicoloPubblico {
         this.tipoVeicolo = tipoVeicolo;
     }
 
-    public List<Biglietto> getBigliettiList() {
-        return bigliettiList;
+    public int getNumeroManutenzioni() {
+        return numeroManutenzioni;
+    }
+
+    public void setNumeroManutenzioni(int numeroManutenzioni) {
+        this.numeroManutenzioni = numeroManutenzioni;
+    }
+
+    public int getNumeroServizi() {
+        return numeroServizi;
+    }
+
+    public void setNumeroServizi(int numeroServizi) {
+        this.numeroServizi = numeroServizi;
     }
 
     @Override
     public String toString() {
         return "VeicoloPubblico = targa: " + targa +
                 ", capienza: " + capienza +
-                ", inServizio: " + inServizio +
-                ", inManutenzione: " + inManutenzione +
+                ", numeroManutenzioni: " + numeroManutenzioni +
+                ", numeroServizi: " + numeroServizi +
                 ", tipoVeicolo: " + tipoVeicolo;
     }
 }
