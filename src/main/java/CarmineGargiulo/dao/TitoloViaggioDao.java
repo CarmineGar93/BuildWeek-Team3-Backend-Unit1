@@ -82,4 +82,13 @@ public class TitoloViaggioDao {
 
     }
 
+    public List<Biglietto> ottieniBigliettiObliteratiPerVeicolo(VeicoloPubblico veicoloPubblico){
+        TypedQuery<Biglietto> query = entityManager.createQuery("SELECT b FROM Biglietto b WHERE b.veicoloPubblico = :veicolo",Biglietto.class);
+        query.setParameter("veicolo", veicoloPubblico);
+        List<Biglietto> result = query.getResultList();
+        if(result.isEmpty()) throw new EmptyListException();
+        return result;
+
+    }
+
 }
