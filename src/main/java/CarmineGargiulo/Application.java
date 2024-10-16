@@ -33,8 +33,8 @@ public class Application {
         TitoloViaggioDao titoloViaggioDao = new TitoloViaggioDao(em);
         VeicoloDAO veicoloDAO = new VeicoloDAO(em);
         inizializzaDb(puntoVenditaDAO, st, utenteDao, tessereDAO, titoloViaggioDao, veicoloDAO);
-        Utente utentefromDb = utenteDao.findUtenteById("8c527f22-ac74-4b3b-8b71-f4792253ccae");
-        tessereDAO.verificaValiditaAbbonamento(utentefromDb);
+
+
 
         em.close();
         emf.close();
