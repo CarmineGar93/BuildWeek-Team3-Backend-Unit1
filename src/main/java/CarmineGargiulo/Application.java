@@ -152,6 +152,8 @@ public class Application {
                 veicoloDAO.salvaVeicolo(veicoloPubblico);
             }
         }
+
+
     }
 
     public static void generaStoricoVeicoli(
@@ -224,5 +226,12 @@ public class Application {
         }
 
         System.out.println("\nControllo e generazione dei dati di manutenzione e servizi completato.");
+
+        if(servizioDao.controlloServiziAttivi().isEmpty()){
+            for (int i = 0; i < 6; i++) {
+                Servizio servizio = new Servizio(veicoli.get(i), tratte.get(i));
+                servizioDao.mettiInServizio(servizio);
+            }
+        }
     }
 }

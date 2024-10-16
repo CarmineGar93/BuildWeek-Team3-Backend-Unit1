@@ -34,6 +34,12 @@ public class Manutenzione {
         this.veicoloPubblico = veicoloPubblico;
     }
 
+    public Manutenzione(TipoManutenzione tipoManutenzione, VeicoloPubblico veicoloPubblico){
+        this.dataInizio = LocalDate.now();
+        this.tipoManutenzione = tipoManutenzione;
+        this.veicoloPubblico = veicoloPubblico;
+    }
+
     public UUID getManutenzioneId() {
         return manutenzioneId;
     }

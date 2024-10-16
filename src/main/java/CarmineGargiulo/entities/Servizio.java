@@ -33,6 +33,12 @@ public class Servizio {
         this.tratta = tratta;
     }
 
+    public Servizio(VeicoloPubblico veicoloPubblico, Tratta tratta){
+        this.dataInizio = LocalDate.now();
+        this.veicoloPubblico = veicoloPubblico;
+        this.tratta = tratta;
+    }
+
     public UUID getServizio_id() {
         return servizioId;
     }

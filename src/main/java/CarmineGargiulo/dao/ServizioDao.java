@@ -19,18 +19,6 @@ public class ServizioDao {
     public void salvaServizio(Servizio servizio) {
         EntityTransaction transaction = entityManager.getTransaction();
         transaction.begin();
-
-        VeicoloPubblico veicolo = servizio.getVeicoloPubblico();
-
-
-        if (veicolo.isInManutenzione()) {
-            throw new RuntimeException("Il veicolo " + veicolo.getTarga() + " è attualmente in manutenzione.");
-        }
-
-        veicolo.setInServizio(true);
-
-        entityManager.merge(veicolo);
-
         entityManager.persist(servizio);
         transaction.commit();
         System.out.println("Il servizio " + servizio.getServizio_id() + " è stato salvato correttamente.");
@@ -54,5 +42,34 @@ public class ServizioDao {
                         "SELECT COUNT(s) FROM Servizio s WHERE s.veicoloPubblico = :veicolo", Long.class)
                 .setParameter("veicolo", veicolo)
                 .getSingleResult();
+    }
+
+    public List<Servizio> controlloServiziAttivi(){
+        TypedQuery<Servizio> query = entityManager.createQuery("SELECT s FROM Servizio s WHERE s.dataFine IS NULL", Servizio.class);
+        return query.getResultList();
+    }
+
+    public void mettiInServizio(Servizio servizio){
+        if(servizio.getVeicoloPubblico().isInManutenzione()) throw new RuntimeException(); // TODO CREARE ECCEZIONE VEICOLO IN MANUTENZIONE
+        if(servizio.getVeicoloPubblico().isInServizio()) throw new RuntimeException(); // TODO CREARE ECCEZIONE VEICOLO GIA IN SERVIZIO
+        if(servizio.getTratta().getServiziList().stream().anyMatch(servizio1 -> servizio1.getDataFine() == null)) throw new RuntimeException(); // TODO CREARE ECCEZIONE TRATTA GIA PERCORSA DA UN ALTRO VEICOLO
+        servizio.getVeicoloPubblico().setInServizio(true);
+        EntityTransaction transaction = entityManager.getTransaction();
+        transaction.begin();
+        entityManager.persist(servizio);
+        transaction.commit();
+        System.out.println("Il servizio " + servizio.getServizio_id() + " è stato salvato correttamente.");
+    }
+
+    public void fuoriServizio(VeicoloPubblico veicoloPubblico){
+        if(veicoloPubblico.isInManutenzione()) throw new RuntimeException(); // TODO CREARE ECCEZIONE VEICOLO IN MANUTENZIONE
+        if(!veicoloPubblico.isInServizio()) throw new RuntimeException(); // TODO CREARE ECCEZIONE VEICOLO GIà FUORI SERVIZIO
+        veicoloPubblico.setInServizio(false);
+        veicoloPubblico.
+        EntityTransaction transaction = entityManager.getTransaction();
+        transaction.begin();
+        entityManager.persist(servizio);
+        transaction.commit();
+        System.out.println("Il servizio " + servizio.getServizio_id() + " è stato salvato correttamente.");
     }
 }
