@@ -58,5 +58,12 @@ public class TitoloViaggioDao {
         return result;
     }
 
+    public List<TitoloViaggio> getAllTitoliViaggioPerPeriodo(int giorni){
+        TypedQuery<TitoloViaggio> query = entityManager.createQuery("SELECT t FROM TitoloViaggio t WHERE t.dataAcquisto > :date", TitoloViaggio.class);
+        query.setParameter("date", LocalDate.now().minusDays(giorni));
+        List<TitoloViaggio> result = query.getResultList();
+        if(result.isEmpty()) throw new EmptyListException();
+        return result;
+    }
 
 }
