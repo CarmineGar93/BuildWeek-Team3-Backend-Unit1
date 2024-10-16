@@ -1,6 +1,9 @@
 package CarmineGargiulo.dao;
 
+import CarmineGargiulo.entities.Biglietto;
+import CarmineGargiulo.entities.TitoloViaggio;
 import CarmineGargiulo.entities.VeicoloPubblico;
+import CarmineGargiulo.exceptions.EmptyListException;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 
@@ -35,5 +38,14 @@ public class VeicoloDAO {
         TypedQuery<VeicoloPubblico> query = entityManager.createQuery(
                 "SELECT v FROM VeicoloPubblico v WHERE v.inServizio = true", VeicoloPubblico.class);
         return query.getResultList();
+    }
+
+    public List<Biglietto> ottieniBigliettiObliteratiPerVeicolo(VeicoloPubblico veicoloPubblico){
+        TypedQuery<Biglietto> query = entityManager.createQuery("SELECT b FROM Biglietto b WHERE b.veicoloPubblico = :veicolo",Biglietto.class);
+        query.setParameter("veicolo", veicoloPubblico);
+        List<Biglietto> result = query.getResultList();
+        if(result.isEmpty()) throw new EmptyListException();
+        return result;
+
     }
 }
