@@ -299,7 +299,7 @@ public class Application {
                 System.out.println("   ");
                 System.out.println("Il veicolo con targa: " + veicolo.getTarga() + " non è attualmente in manutenzione.");
             } else {
-                System.out.println("   ");
+                System.out.println("     ");
                 System.out.println("Il veicolo con targa: " + veicolo.getTarga() + "è attualmente in manutenzione" );
                 for (Manutenzione manutenzione : manutenzioniAttuali) {
                     System.out.println("Manutenzione: " + manutenzione.getTipoManutenzione() + " con ID" + manutenzione.getManutenzioneId() + " iniziato il "
