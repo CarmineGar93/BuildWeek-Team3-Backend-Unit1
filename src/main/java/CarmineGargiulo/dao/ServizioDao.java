@@ -55,4 +55,5 @@ public class ServizioDao {
                 .setParameter("veicolo", veicolo)
                 .getSingleResult();
     }
+
 }

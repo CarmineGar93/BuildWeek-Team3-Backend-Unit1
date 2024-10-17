@@ -12,26 +12,27 @@ import java.util.UUID;
 public class PuntoVenditaDAO {
     private final EntityManager entityManager;
 
-    public PuntoVenditaDAO(EntityManager entityManager){
+    public PuntoVenditaDAO(EntityManager entityManager) {
         this.entityManager = entityManager;
     }
 
-    public void salvaPuntoVendita(PuntoVendita puntoVendita){
+    public void salvaPuntoVendita(PuntoVendita puntoVendita) {
         EntityTransaction transaction = entityManager.getTransaction();
         transaction.begin();
         entityManager.persist(puntoVendita);
         transaction.commit();
-        System.out.println("Punto vendita " + puntoVendita.getPuntoVenditaId() + " salvato correttamente" );
+        System.out.println("Punto vendita " + puntoVendita.getPuntoVenditaId() + " salvato correttamente");
     }
 
-    public List<PuntoVendita> ottieniListaPuntiVendita(){
+    public List<PuntoVendita> ottieniListaPuntiVendita() {
         TypedQuery<PuntoVendita> query = entityManager.createNamedQuery("getAllPuntiVendita", PuntoVendita.class);
         return query.getResultList();
     }
 
-    public PuntoVendita findPuntoVenditaById(String id){
+    public PuntoVendita findPuntoVenditaById(String id) {
         PuntoVendita cercato = entityManager.find(PuntoVendita.class, UUID.fromString(id));
-        if(cercato == null) throw new RuntimeException(); //TODO aggiungere eccezione personale
+        if (cercato == null) throw new RuntimeException();
         return cercato;
     }
+
 }
