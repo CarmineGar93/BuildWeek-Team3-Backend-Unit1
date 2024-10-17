@@ -34,6 +34,9 @@ public class Application {
 
         generaStoricoVeicoli(veicoloDAO, manutenzioneDao, servizioDao, tratteDao);
 
+        VeicoloPubblico veicoloPubblicofromDb = veicoloDAO.findVeicoloById("6f323736-f760-4fb8-9036-63e0e5fab094");
+        manutenzioneDao.terminaManutenzione(veicoloPubblicofromDb);
+
         em.close();
         emf.close();
     }
@@ -154,6 +157,8 @@ public class Application {
                 veicoloDAO.salvaVeicolo(veicoloPubblico);
             }
         }
+
+
     }
 
     public static void generaStoricoVeicoli(
@@ -242,6 +247,12 @@ public class Application {
                     System.out.println(manutenzione.getTipoManutenzione() + " dal "
                             + manutenzione.getDataInizio() + " al " + manutenzione.getDataFine());
                 }
+            }
+        }
+
+        if(servizioDao.controlloServiziAttivi().isEmpty()){
+            for (int i = 0; i < 6; i++) {
+                servizioDao.mettiInServizio(veicoli.get(i), tratte.get(i));
             }
         }
     }

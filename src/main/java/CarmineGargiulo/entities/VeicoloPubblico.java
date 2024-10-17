@@ -3,6 +3,7 @@ package CarmineGargiulo.entities;
 import CarmineGargiulo.enums.TipoVeicolo;
 import jakarta.persistence.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -28,6 +29,13 @@ public class VeicoloPubblico {
     @Enumerated(EnumType.STRING)
     @Column(name = "tipo_veicolo")
     private TipoVeicolo tipoVeicolo;
+
+    @OneToMany(mappedBy = "veicoloPubblico")
+    private List<Servizio> serviziList;
+
+    @OneToMany(mappedBy = "veicoloPubblico")
+    private List<Manutenzione> manutenzionList;
+
 
     public VeicoloPubblico() {
     }
@@ -76,6 +84,14 @@ public class VeicoloPubblico {
 
     public void setTipoVeicolo(TipoVeicolo tipoVeicolo) {
         this.tipoVeicolo = tipoVeicolo;
+    }
+
+    public List<Servizio> getServiziList() {
+        return serviziList;
+    }
+
+    public List<Manutenzione> getManutenzionList() {
+        return manutenzionList;
     }
 
     @Override

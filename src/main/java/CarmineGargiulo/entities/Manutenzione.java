@@ -15,7 +15,7 @@ public class Manutenzione {
     private UUID manutenzioneId;
     @Column(name = "data_inizio", nullable = false)
     private LocalDate dataInizio;
-    @Column(name = "data_fine", nullable = false)
+
     private LocalDate dataFine;
     @Column(name = "tipo_manutenzione")
     @Enumerated(EnumType.STRING)
@@ -30,6 +30,12 @@ public class Manutenzione {
     public Manutenzione(LocalDate dataInizio, LocalDate dataFine, TipoManutenzione tipoManutenzione, VeicoloPubblico veicoloPubblico) {
         this.dataInizio = dataInizio;
         this.dataFine = dataFine;
+        this.tipoManutenzione = tipoManutenzione;
+        this.veicoloPubblico = veicoloPubblico;
+    }
+
+    public Manutenzione(TipoManutenzione tipoManutenzione, VeicoloPubblico veicoloPubblico){
+        this.dataInizio = LocalDate.now();
         this.tipoManutenzione = tipoManutenzione;
         this.veicoloPubblico = veicoloPubblico;
     }
