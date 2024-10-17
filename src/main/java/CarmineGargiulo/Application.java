@@ -250,11 +250,64 @@ public class Application {
             }
         }
 
+        for (VeicoloPubblico veicolo : veicoli) {
+
+            List<Servizio> servizi = servizioDao.ottieniListaServizi(veicolo);
+
+            if (servizi.isEmpty()) {
+                System.out.println("   ");
+                System.out.println("Non è presente nessun servizio in archivio per il veicolo: " + veicolo.getVeicoloId());
+            } else {
+
+                System.out.println("   ");
+                System.out.println("lista dei periodi di servizio per il veicolo: " + veicolo.getVeicoloId());
+                for (Servizio servizio : servizi) {
+                    System.out.println(servizio.getServizio_id() + " dal "
+                            + servizio.getDataInizio() + " al " + servizio.getDataFine());
+                }
+            }
+        }
+
+        for (VeicoloPubblico veicolo : veicoli) {
+            List<Servizio> serviziAttuali = servizioDao.ottieniListaServiziAttuali(veicolo);
+
+            if (serviziAttuali.isEmpty()) {
+                System.out.println("   ");
+                System.out.println("Il veicolo: " + veicolo.getVeicoloId() + " non è attualmente in servizio.");
+            } else {
+                System.out.println("   ");
+                System.out.println("Servizi attuali per il veicolo: " + veicolo.getVeicoloId() + ":");
+                for (Servizio servizio : serviziAttuali) {
+                    System.out.println("Servizio ID: " + servizio.getServizio_id() + " iniziato il "
+                            + servizio.getDataInizio() + ", in corso.");
+                }
+            }
+        }
+
+        for (VeicoloPubblico veicolo : veicoli) {
+            List<Manutenzione> manutenzioniAttuali = manutenzioneDao.ottieniListaManutenzioniAttuali(veicolo);
+
+            if (manutenzioniAttuali.isEmpty()) {
+                System.out.println("   ");
+                System.out.println("Il veicolo: " + veicolo.getVeicoloId() + " non è attualmente in manutenzione.");
+            } else {
+                System.out.println("   ");
+                System.out.println("Il veicolo: " + veicolo.getVeicoloId() + "è attualmente in manutenzione" );
+                for (Manutenzione manutenzione : manutenzioniAttuali) {
+                    System.out.println("Manutenzione ID: " + manutenzione.getManutenzioneId() + " iniziato il "
+                            + manutenzione.getDataInizio() + ", in corso.");
+                }
+            }
+        }
+
+
         if(servizioDao.controlloServiziAttivi().isEmpty()){
             for (int i = 0; i < 6; i++) {
                 servizioDao.mettiInServizio(veicoli.get(i), tratte.get(i));
             }
         }
+
+
     }
 
 

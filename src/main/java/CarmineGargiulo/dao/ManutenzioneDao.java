@@ -44,6 +44,20 @@ public class ManutenzioneDao {
         return query.getResultList();
     }
 
+    public List<Manutenzione> ottieniListaManutenzioniAttuali(VeicoloPubblico veicoloPubblico) {
+        LocalDate oggi = LocalDate.now();
+        TypedQuery<Manutenzione> query = entityManager.createQuery(
+                        "SELECT m FROM Manutenzione m " +
+                                "WHERE m.veicoloPubblico = :veicoloPubblico AND m.dataInizio <= :oggi " +
+                                "AND (m.dataFine IS NULL OR m.dataFine >= :oggi)",
+                        Manutenzione.class)
+                .setParameter("veicoloPubblico", veicoloPubblico)
+                .setParameter("oggi", oggi);
+
+        return query.getResultList();
+    }
+
+
 
 
     public void mettiInManutenzione(VeicoloPubblico veicoloPubblico, TipoManutenzione tipoManutenzione){

@@ -1,5 +1,6 @@
 package CarmineGargiulo.dao;
 
+import CarmineGargiulo.entities.Manutenzione;
 import CarmineGargiulo.entities.Servizio;
 import CarmineGargiulo.entities.Tratta;
 import CarmineGargiulo.entities.VeicoloPubblico;
@@ -27,10 +28,26 @@ public class ServizioDao {
         System.out.println("Il servizio " + servizio.getServizio_id() + " è stato salvato correttamente.");
     }
 
-    public List<Servizio> ottieniListaServizi() {
-        TypedQuery<Servizio> query = entityManager.createQuery("SELECT s FROM Servizio s", Servizio.class);
+    public List<Servizio> ottieniListaServizi(VeicoloPubblico veicolo) {
+        TypedQuery<Servizio> query = entityManager.createQuery("SELECT s FROM Servizio s WHERE s.veicoloPubblico = :veicolo", Servizio.class);
+        query.setParameter("veicolo", veicolo);
         return query.getResultList();
     }
+
+    public List<Servizio> ottieniListaServiziAttuali(VeicoloPubblico veicoloPubblico) {
+        LocalDate oggi = LocalDate.now();
+        TypedQuery<Servizio> query = entityManager.createQuery(
+                        "SELECT s FROM Servizio s " +
+                                "WHERE s.veicoloPubblico = :veicoloPubblico AND s.dataInizio <= :oggi " +
+                                "AND (s.dataFine IS NULL OR s.dataFine >= :oggi)",
+                        Servizio.class)
+                .setParameter("veicoloPubblico", veicoloPubblico)
+                .setParameter("oggi", oggi);
+
+        return query.getResultList();
+    }
+
+
 
     public Servizio findServizioById(String id) {
         Servizio cercato = entityManager.find(Servizio.class, UUID.fromString(id));
