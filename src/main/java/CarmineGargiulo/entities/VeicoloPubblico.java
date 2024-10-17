@@ -3,6 +3,7 @@ package CarmineGargiulo.entities;
 import CarmineGargiulo.enums.TipoVeicolo;
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -35,6 +36,11 @@ public class VeicoloPubblico {
 
     @OneToMany(mappedBy = "veicoloPubblico")
     private List<Manutenzione> manutenzionList;
+
+
+    @OneToMany(mappedBy = "veicoloPubblico")
+
+    private List<Tratta> trattePercorse = new ArrayList<>(); //aggiunto
 
 
     public VeicoloPubblico() {
@@ -94,12 +100,27 @@ public class VeicoloPubblico {
         return manutenzionList;
     }
 
+    public List<Tratta> getTrattePercorse() {
+        return trattePercorse;
+    }
+
+    public void setTrattePercorse(List<Tratta> trattePercorse) {
+        this.trattePercorse = trattePercorse;
+    }
+
+
     @Override
     public String toString() {
-        return "VeicoloPubblico = targa: " + targa +
-                ", capienza: " + capienza +
-                ", inServizio: " + inServizio +
-                ", inManutenzione: " + inManutenzione +
-                ", tipoVeicolo: " + tipoVeicolo;
+        return "VeicoloPubblico{" +
+                "veicoloId=" + veicoloId +
+                ", targa='" + targa + '\'' +
+                ", capienza=" + capienza +
+                ", inServizio=" + inServizio +
+                ", inManutenzione=" + inManutenzione +
+                ", tipoVeicolo=" + tipoVeicolo +
+                ", serviziList=" + serviziList +
+                ", manutenzionList=" + manutenzionList +
+                ", trattePercorse=" + trattePercorse +
+                '}';
     }
 }

@@ -24,6 +24,9 @@ public class Tratta {
     @OneToMany(mappedBy = "tratta")
     private List<Servizio> serviziList;
 
+    @ManyToOne
+    @JoinColumn(name = "veicolo_id")
+    private VeicoloPubblico veicoloPubblico;
     public Tratta() {
     }
 

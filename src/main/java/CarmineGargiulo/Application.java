@@ -75,6 +75,8 @@ public class Application {
                         faker.number().numberBetween(20, 60)
                 );
                 tratteDao.saveTratta(tratta);
+                veicoloDAO.aggiungiTratta(tratta);
+
             }
         }
 
@@ -153,6 +155,14 @@ public class Application {
                         TipoVeicolo.AUTOBUS
                 );
                 veicoloDAO.salvaVeicolo(veicoloPubblico);
+            }
+            //aggiunto, permette di vedere percorrenza / n volte
+            for (Tratta tratta : tratteEsistenti) {
+                String nomeTratta = tratta.getNomeTratta();
+                int numeroVolte = veicoloDAO.contaTrattePercorse(nomeTratta);
+                int tempoTotale = veicoloDAO.tempoTotalePerTratta(nomeTratta);
+                System.out.println("La tratta " + nomeTratta + " è stata percorsa " + numeroVolte + " volte.");
+                System.out.println("Tempo totale speso sulla tratta " + nomeTratta + " è di " + tempoTotale + " minuti.");
             }
         }
 
@@ -235,5 +245,6 @@ public class Application {
                 servizioDao.mettiInServizio(veicoli.get(i), tratte.get(i));
             }
         }
+
     }
 }
