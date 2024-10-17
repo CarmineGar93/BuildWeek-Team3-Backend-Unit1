@@ -5,8 +5,6 @@ import CarmineGargiulo.entities.*;
 import CarmineGargiulo.enums.TipoAbbonamento;
 import CarmineGargiulo.enums.TipoManutenzione;
 import CarmineGargiulo.enums.TipoVeicolo;
-import CarmineGargiulo.exceptions.AbbonamentoDateException;
-import CarmineGargiulo.exceptions.TesseraScadutaException;
 import com.github.javafaker.Faker;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
@@ -44,7 +42,7 @@ public class Application {
             System.out.println("Sei un amministratore? (S/N)");
             String rispostaAdmin = scanner.nextLine().trim().toUpperCase();
             if (rispostaAdmin.equals("S")) {
-                System.out.println("\nAccesso amministratore. Funzionalità amministrative in arrivo.");
+                gestisciAdmin(scanner, puntoVenditaDAO);
             } else {
                 System.out.println("\nNon abbiamo altre alternative. Una buona giornata da parte dello Staff.");
             }
@@ -91,8 +89,65 @@ public class Application {
         }
     }
 
-    private static void compraBiglietto(Scanner scanner, TitoloViaggioDao titoloViaggioDao, PuntoVenditaDAO puntoVenditaDAO) {
+    private static void gestisciAdmin(Scanner scanner, PuntoVenditaDAO puntoVenditaDAO) {
+        boolean sceltaValida = false;
 
+        while (!sceltaValida) {
+            System.out.println("Cosa vuoi fare?");
+            System.out.println("1. Controllare vendite biglietti e abbonamenti per punti vendita");
+            System.out.println("2. Esci");
+
+            try {
+                int scelta = scanner.nextInt();
+                scanner.nextLine();
+
+                switch (scelta) {
+                    case 1:
+                        visualizzaVenditePuntiVendita(puntoVenditaDAO, scanner);
+                        sceltaValida = true;
+                        break;
+                    case 2:
+                        System.out.println("Uscita dal sistema amministratore.");
+                        sceltaValida = true;
+                        break;
+                    default:
+                        System.out.println("Scelta non valida. Scegli un'opzione tra quelle disponibili.");
+                }
+            } catch (InputMismatchException e) {
+                System.out.println("Inserisci un numero valido.");
+                scanner.nextLine();
+            }
+        }
+    }
+
+    private static void visualizzaVenditePuntiVendita(PuntoVenditaDAO puntoVenditaDAO, Scanner scanner) {
+        List<PuntoVendita> puntiVendita = puntoVenditaDAO.ottieniListaPuntiVendita();
+
+        if (puntiVendita.isEmpty()) {
+            System.out.println("\nNessun punto vendita disponibile.");
+            return;
+        }
+
+        System.out.println("\nSeleziona un punto vendita dall'elenco:");
+        for (int i = 0; i < puntiVendita.size(); i++) {
+            System.out.println((i + 1) + ". " + puntiVendita.get(i).getIndirizzo());
+        }
+
+        System.out.println("\nScegli il numero del punto vendita:");
+        int scelta = scanner.nextInt();
+        scanner.nextLine();
+
+        if (scelta > 0 && scelta <= puntiVendita.size()) {
+            PuntoVendita puntoVendita = puntiVendita.get(scelta - 1);
+            System.out.println("\nPunto Vendita: " + puntoVendita.getIndirizzo());
+            System.out.println("Biglietti venduti: " + puntoVendita.getBigliettiVenduti());
+            System.out.println("Abbonamenti venduti: " + puntoVendita.getAbbonamentiVenduti());
+        } else {
+            System.out.println("\nScelta non valida.");
+        }
+    }
+
+    private static void compraBiglietto(Scanner scanner, TitoloViaggioDao titoloViaggioDao, PuntoVenditaDAO puntoVenditaDAO) {
         List<PuntoVendita> puntiVendita = puntoVenditaDAO.ottieniListaPuntiVendita();
         if (puntiVendita.isEmpty()) {
             System.out.println("\nNessun punto vendita disponibile.");
@@ -113,6 +168,7 @@ public class Application {
             System.out.println("Hai scelto il punto vendita: " + puntoVendita.getIndirizzo());
 
             Biglietto biglietto = new Biglietto(2.5, LocalDate.now(), puntoVendita);
+            puntoVendita.setBigliettiVenduti(puntoVendita.getBigliettiVenduti() + 1);
 
             titoloViaggioDao.salvaTitoloViaggio(biglietto);
             System.out.println("\nBiglietto acquistato con successo presso " + puntoVendita.getIndirizzo() + "!");
@@ -120,7 +176,6 @@ public class Application {
             System.out.println("\nScelta non valida. Per favore, seleziona un numero tra quelli disponibili.");
         }
     }
-
 
     private static void compraAbbonamento(Scanner scanner, TitoloViaggioDao titoloViaggioDao, PuntoVenditaDAO puntoVenditaDAO, TessereDAO tessereDAO) {
         System.out.println("Acquisto abbonamento:");
@@ -147,20 +202,6 @@ public class Application {
 
         PuntoVendita puntoVendita = puntiVendita.get(sceltaPuntoVendita - 1);
         System.out.println("\nHai scelto il punto vendita: " + puntoVendita.getIndirizzo());
-
-        // Inserimento tessera commentato per testare il resto
-    /*
-    System.out.println("Inserisci l'ID della tessera:");
-    String tesseraId = scanner.nextLine();
-
-    Tessera tessera;
-    try {
-        tessera = tessereDAO.findTesseraById(tesseraId);
-    } catch (RuntimeException e) {
-        System.out.println("Tessera non trovata. Assicurati di inserire un ID valido.");
-        return;
-    }
-    */
 
         System.out.println("Seleziona il tipo di abbonamento:");
         System.out.println("1. SETTIMANALE ");
@@ -202,28 +243,18 @@ public class Application {
 
         if (conferma.equals("S")) {
             Abbonamento abbonamento = new Abbonamento(prezzoAbbonamento, LocalDate.now(), puntoVendita, LocalDate.now(), tipoAbbonamento, null);
+            puntoVendita.setAbbonamentiVenduti(puntoVendita.getAbbonamentiVenduti() + 1);  // Incrementa il conteggio degli abbonamenti venduti
+
             try {
                 titoloViaggioDao.salvaTitoloViaggio(abbonamento);
                 System.out.println("Abbonamento '" + tipoAbbonamento + "' acquistato con successo presso " + puntoVendita.getIndirizzo() + "!");
-            } catch (AbbonamentoDateException e) {
+            } catch (Exception e) {
                 System.out.println("Errore: " + e.getMessage());
-            } catch (TesseraScadutaException e) {
-                System.out.println("La tessera è scaduta. Non è possibile acquistare l'abbonamento.");
             }
         } else {
             System.out.println("Non hai acquistato questo abbonamento.");
         }
-
-        System.out.println("Vuoi tornare a scegliere un abbonamento o vuoi uscire? (S/N)");
-        String sceltaFinale = scanner.nextLine().trim().toUpperCase();
-
-        if (sceltaFinale.equals("S")) {
-            compraAbbonamento(scanner, titoloViaggioDao, puntoVenditaDAO, tessereDAO);
-        } else {
-            System.out.println("Operazione terminata. Arrivederci!");
-        }
     }
-
 
     private static void scegliTratta(Scanner scanner, TratteDao tratteDao) {
         System.out.println("\nSelezione della tratta:");
@@ -267,10 +298,14 @@ public class Application {
                 if (random) {
                     RivenditoreAutorizzato rivenditoreAutorizzato = new RivenditoreAutorizzato(
                             indirizzo, nomePuntoVendita);
+                    rivenditoreAutorizzato.setBigliettiVenduti(faker.number().numberBetween(50, 200));
+                    rivenditoreAutorizzato.setAbbonamentiVenduti(faker.number().numberBetween(10, 50));
                     puntoVenditaDAO.salvaPuntoVendita(rivenditoreAutorizzato);
                 } else {
                     Distributore distributore = new Distributore(
                             indirizzo, faker.random().nextBoolean());
+                    distributore.setBigliettiVenduti(faker.number().numberBetween(50, 200));
+                    distributore.setAbbonamentiVenduti(faker.number().numberBetween(10, 50));
                     puntoVenditaDAO.salvaPuntoVendita(distributore);
                 }
             }
@@ -323,7 +358,6 @@ public class Application {
                 }
 
                 if (random) {
-
                     Biglietto biglietto = new Biglietto(
                             Double.parseDouble(faker.commerce().price().replace(",", ".")),
                             LocalDate.of(faker.random().nextInt(2020, 2024),
@@ -345,7 +379,7 @@ public class Application {
                     );
                     try {
                         titoloViaggioDao.salvaTitoloViaggio(abbonamento);
-                    } catch (AbbonamentoDateException e) {
+                    } catch (Exception e) {
                         System.out.println("Errore nell'acquisto dell'abbonamento: " + e.getMessage());
                     }
                 }
@@ -438,7 +472,5 @@ public class Application {
 
             index++;
         }
-
-
     }
 }
