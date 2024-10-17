@@ -65,7 +65,7 @@ public class ManutenzioneDao {
     }
 
     public void mettiInManutenzione(VeicoloPubblico veicoloPubblico, TipoManutenzione tipoManutenzione){
-        if(veicoloPubblico.isInServizio()) throw new VeicoloInServizioException(); //CREATA ECCEZIONE VEICOLO IN SERVIZIO
+
         if(veicoloPubblico.isInManutenzione()) throw new VeicoloGiaInManutenzioneException(); // CREATA ECCEZIONE VEICOLO GIA IN MANUTENZIONE
         veicoloPubblico.setInManutenzione(true);
         Manutenzione manutenzione = new Manutenzione(tipoManutenzione, veicoloPubblico);

@@ -42,7 +42,6 @@ public class Application {
         manutenzioneDao.terminaManutenzione(veicoloPubblico2fromDb);
 
 
-
         em.close();
         emf.close();
     }
@@ -256,7 +255,7 @@ public class Application {
             }
         }
 
-        for (VeicoloPubblico veicolo : veicoli) {
+       for (VeicoloPubblico veicolo : veicoli) {
 
             List<Servizio> servizi = servizioDao.ottieniListaServizi(veicolo);
 
@@ -311,7 +310,8 @@ public class Application {
 
         System.out.println("   ");
 
-        if (servizioDao.controlloServiziAttivi().isEmpty()) {
+        //Metti un veicolo in servizio
+        /*if (servizioDao.controlloServiziAttivi().isEmpty()) {
             for (int i = 0; i < 6; i++) {
                 try {
                     servizioDao.mettiInServizio(veicoli.get(i), tratte.get(i));
@@ -323,7 +323,8 @@ public class Application {
                     System.out.println( e.getMessage());
                 }
             }
-        }
+        }*/
+        System.out.println("---------Rimuovi un veicolo dal servizio ------------");
 
         if (servizioDao.controlloServiziAttivi().isEmpty()) {
             for (int i = 0; i < 6; i++) {
@@ -337,8 +338,9 @@ public class Application {
             }
         }
 
+        //Imposta Manutenzione
         if (manutenzioneDao.controlloManutenzioniAttive().isEmpty()) {
-            for (int i = 7; i <= 10; i++) {
+            for (int i = 7; i <= 11; i++) {
                 try {
                     TipoManutenzione tipoManutenzione = TipoManutenzione.REVISIONE;
                     manutenzioneDao.mettiInManutenzione(veicoli.get(i), tipoManutenzione );
