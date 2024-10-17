@@ -1,10 +1,11 @@
 package CarmineGargiulo.dao;
 
-import CarmineGargiulo.entities.Manutenzione;
+
 import CarmineGargiulo.entities.Servizio;
 import CarmineGargiulo.entities.Tratta;
 import CarmineGargiulo.entities.VeicoloPubblico;
 import CarmineGargiulo.exceptions.TrattaGiaPercorsaException;
+import CarmineGargiulo.exceptions.VeicoloGiaFuoriServizioException;
 import CarmineGargiulo.exceptions.VeicoloGiaInServizioException;
 import CarmineGargiulo.exceptions.VeicoloInManutenzioneException;
 import jakarta.persistence.EntityManager;
@@ -86,15 +87,31 @@ public class ServizioDao {
     }
 
     public void mettiFuoriServizio(VeicoloPubblico veicoloPubblico){
-        if(veicoloPubblico.isInManutenzione()) throw new RuntimeException(); // TODO CREARE ECCEZIONE VEICOLO IN MANUTENZIONE
-        if(!veicoloPubblico.isInServizio()) throw new RuntimeException(); // TODO CREARE ECCEZIONE VEICOLO GIà FUORI SERVIZIO
+        if(veicoloPubblico.isInManutenzione()) throw new VeicoloInManutenzioneException(); // CREATA ECCEZIONE VEICOLO IN MANUTENZIONE
+        if(!veicoloPubblico.isInServizio()) throw new VeicoloGiaFuoriServizioException(); // CREATA ECCEZIONE VEICOLO GIà FUORI SERVIZIO
         veicoloPubblico.setInServizio(false);
         Optional<Servizio> ricerca = veicoloPubblico.getServiziList().stream().filter(servizio -> servizio.getDataFine() == null).findFirst();
         ricerca.ifPresent(servizio -> servizio.setDataFine(LocalDate.now()));
         EntityTransaction transaction = entityManager.getTransaction();
         transaction.begin();
         entityManager.persist(veicoloPubblico);
+        VeicoloPubblico veicoloDisponibile = trovaVeicoloDisponibile();
+        if (veicoloDisponibile != null && ricerca.isPresent()) {
+            Tratta tratta = ricerca.get().getTratta();
+           mettiInServizio(veicoloDisponibile, tratta);
+        }
         transaction.commit();
         System.out.println("Il veicolo " + veicoloPubblico.getTarga() + " è stato fermato");
+    }
+    private VeicoloPubblico trovaVeicoloDisponibile() {
+
+        TypedQuery<VeicoloPubblico> query = entityManager.createQuery("SELECT v FROM VeicoloPubblico v WHERE v.inServizio = false AND v.inManutenzione = false", VeicoloPubblico.class);
+        List<VeicoloPubblico> veicoli = query.getResultList();
+
+
+        if (!veicoli.isEmpty()) {
+            return veicoli.get(0);
+        }
+        return null;
     }
 }

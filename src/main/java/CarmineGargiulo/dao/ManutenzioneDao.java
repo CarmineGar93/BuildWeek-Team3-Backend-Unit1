@@ -4,6 +4,7 @@ import CarmineGargiulo.entities.Manutenzione;
 import CarmineGargiulo.entities.Servizio;
 import CarmineGargiulo.entities.VeicoloPubblico;
 import CarmineGargiulo.enums.TipoManutenzione;
+import CarmineGargiulo.exceptions.*;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.TypedQuery;
@@ -44,6 +45,7 @@ public class ManutenzioneDao {
         return query.getResultList();
     }
 
+
     public List<Manutenzione> ottieniListaManutenzioniAttuali(VeicoloPubblico veicoloPubblico) {
         LocalDate oggi = LocalDate.now();
         TypedQuery<Manutenzione> query = entityManager.createQuery(
@@ -57,12 +59,14 @@ public class ManutenzioneDao {
         return query.getResultList();
     }
 
-
-
+    public List<Manutenzione> controlloManutenzioniAttive(){
+        TypedQuery<Manutenzione> query = entityManager.createQuery("SELECT m FROM Manutenzione m WHERE m.dataFine IS NULL", Manutenzione.class);
+        return query.getResultList();
+    }
 
     public void mettiInManutenzione(VeicoloPubblico veicoloPubblico, TipoManutenzione tipoManutenzione){
-        if(veicoloPubblico.isInServizio()) throw new RuntimeException(); // TODO CREARE ECCEZIONE VEICOLO IN SERVIZIO
-        if(veicoloPubblico.isInManutenzione()) throw new RuntimeException(); // TODO CREARE ECCEZIONE VEICOLO GIA IN MANUTENZIONE
+        if(veicoloPubblico.isInServizio()) throw new VeicoloInServizioException(); //CREATA ECCEZIONE VEICOLO IN SERVIZIO
+        if(veicoloPubblico.isInManutenzione()) throw new VeicoloGiaInManutenzioneException(); // CREATA ECCEZIONE VEICOLO GIA IN MANUTENZIONE
         veicoloPubblico.setInManutenzione(true);
         Manutenzione manutenzione = new Manutenzione(tipoManutenzione, veicoloPubblico);
         EntityTransaction transaction = entityManager.getTransaction();
@@ -73,8 +77,8 @@ public class ManutenzioneDao {
     }
 
     public void terminaManutenzione(VeicoloPubblico veicoloPubblico){
-        if(veicoloPubblico.isInServizio()) throw new RuntimeException(); // TODO CREARE ECCEZIONE VEICOLO IN SERVIZIO
-        if(!veicoloPubblico.isInManutenzione()) throw new RuntimeException(); // TODO CREARE ECCEZIONE VEICOLO GIà NON IN MANUTENZIONE
+        if(veicoloPubblico.isInServizio()) throw new VeicoloInServizioException(); // CREATA ECCEZIONE VEICOLO IN SERVIZIO
+        if(!veicoloPubblico.isInManutenzione()) throw new VeicoloGiaFuoriManutenzioneException(); // CREATA ECCEZIONE VEICOLO GIà NON IN MANUTENZIONE
         veicoloPubblico.setInManutenzione(false);
         Optional<Manutenzione> ricerca = veicoloPubblico.getManutenzionList().stream().filter(manutenzione -> manutenzione.getDataFine() == null).findFirst();
         ricerca.ifPresent(manutenzione -> manutenzione.setDataFine(LocalDate.now()));

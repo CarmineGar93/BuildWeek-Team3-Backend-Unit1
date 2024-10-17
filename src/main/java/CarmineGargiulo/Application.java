@@ -5,10 +5,7 @@ import CarmineGargiulo.entities.*;
 import CarmineGargiulo.enums.TipoAbbonamento;
 import CarmineGargiulo.enums.TipoManutenzione;
 import CarmineGargiulo.enums.TipoVeicolo;
-import CarmineGargiulo.exceptions.AbbonamentoDateException;
-import CarmineGargiulo.exceptions.TrattaGiaPercorsaException;
-import CarmineGargiulo.exceptions.VeicoloGiaInServizioException;
-import CarmineGargiulo.exceptions.VeicoloInManutenzioneException;
+import CarmineGargiulo.exceptions.*;
 import com.github.javafaker.Faker;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
@@ -37,8 +34,14 @@ public class Application {
 
         generaStoricoVeicoli(veicoloDAO, manutenzioneDao, servizioDao, tratteDao);
 
-        VeicoloPubblico veicoloPubblicofromDb = veicoloDAO.findVeicoloById("c422099a-a0c0-40fa-9c9d-d82399048b10");
+       VeicoloPubblico veicoloPubblicofromDb = veicoloDAO.findVeicoloById("26706a33-3856-414e-b898-20dbf1ca8208");
         manutenzioneDao.terminaManutenzione(veicoloPubblicofromDb);
+        VeicoloPubblico veicoloPubblico1fromDb = veicoloDAO.findVeicoloById("\"68d0c19a-9a5c-41d6-8d69-72fb0c1a564e\"");
+        manutenzioneDao.terminaManutenzione(veicoloPubblico1fromDb);
+        VeicoloPubblico veicoloPubblico2fromDb = veicoloDAO.findVeicoloById("\"b1b0489d-6322-4a5b-9ec4-8b417b84974e\"");
+        manutenzioneDao.terminaManutenzione(veicoloPubblico2fromDb);
+
+
 
         em.close();
         emf.close();
@@ -265,12 +268,14 @@ public class Application {
                 System.out.println("   ");
                 System.out.println("lista dei periodi di servizio per il veicolo con targa: " + veicolo.getTarga());
                 for (Servizio servizio : servizi) {
+                    String dataFine = servizio.getDataFine() == null ? "in corso" : servizio.getDataFine().toString();
                     System.out.println(servizio.getServizio_id() + " dal "
-                            + servizio.getDataInizio() + " al " + servizio.getDataFine());
+                            + servizio.getDataInizio() + " al " + dataFine);
                 }
             }
         }
 
+        System.out.println("---------Servi attuali per ciascun veicoli------------");
         for (VeicoloPubblico veicolo : veicoli) {
             List<Servizio> serviziAttuali = servizioDao.ottieniListaServiziAttuali(veicolo);
 
@@ -287,6 +292,7 @@ public class Application {
             }
         }
 
+        System.out.println("---------Manutenzioni attuali per ciascun veicoli------------");
         for (VeicoloPubblico veicolo : veicoli) {
             List<Manutenzione> manutenzioniAttuali = manutenzioneDao.ottieniListaManutenzioniAttuali(veicolo);
 
@@ -303,6 +309,7 @@ public class Application {
             }
         }
 
+        System.out.println("   ");
 
         if (servizioDao.controlloServiziAttivi().isEmpty()) {
             for (int i = 0; i < 6; i++) {
@@ -317,6 +324,32 @@ public class Application {
                 }
             }
         }
+
+        if (servizioDao.controlloServiziAttivi().isEmpty()) {
+            for (int i = 0; i < 6; i++) {
+                try {
+                    servizioDao.mettiFuoriServizio(veicoli.get(i));
+                } catch (VeicoloInManutenzioneException e) {
+                    System.out.println(  e.getMessage());
+                } catch (VeicoloGiaInServizioException e) {
+                    System.out.println( e.getMessage());
+                }
+            }
+        }
+
+        if (manutenzioneDao.controlloManutenzioniAttive().isEmpty()) {
+            for (int i = 7; i <= 10; i++) {
+                try {
+                    TipoManutenzione tipoManutenzione = TipoManutenzione.REVISIONE;
+                    manutenzioneDao.mettiInManutenzione(veicoli.get(i), tipoManutenzione );
+                } catch (VeicoloInServizioException e) {
+                    System.out.println(  e.getMessage());
+                } catch (VeicoloGiaInServizioException e) {
+                    System.out.println( e.getMessage());
+                }
+            }
+        }
+
 
 
 
