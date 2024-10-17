@@ -4,6 +4,9 @@ import CarmineGargiulo.entities.Manutenzione;
 import CarmineGargiulo.entities.Servizio;
 import CarmineGargiulo.entities.Tratta;
 import CarmineGargiulo.entities.VeicoloPubblico;
+import CarmineGargiulo.exceptions.TrattaGiaPercorsaException;
+import CarmineGargiulo.exceptions.VeicoloGiaInServizioException;
+import CarmineGargiulo.exceptions.VeicoloInManutenzioneException;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.TypedQuery;
@@ -70,9 +73,9 @@ public class ServizioDao {
     }
 
     public void mettiInServizio(VeicoloPubblico veicoloPubblico, Tratta tratta){
-        if(veicoloPubblico.isInManutenzione()) throw new RuntimeException(); // TODO CREARE ECCEZIONE VEICOLO IN MANUTENZIONE
-        if(veicoloPubblico.isInServizio()) throw new RuntimeException(); // TODO CREARE ECCEZIONE VEICOLO GIA IN SERVIZIO
-        if(tratta.getServiziList().stream().anyMatch(servizio1 -> servizio1.getDataFine() == null)) throw new RuntimeException(); // TODO CREARE ECCEZIONE TRATTA GIA PERCORSA DA UN ALTRO VEICOLO
+        if(veicoloPubblico.isInManutenzione()) throw new VeicoloInManutenzioneException(); //  CREATA ECCEZIONE VEICOLO IN MANUTENZIONE
+        if(veicoloPubblico.isInServizio()) throw new VeicoloGiaInServizioException(); // CREATA ECCEZIONE VEICOLO GIA IN SERVIZIO
+        if(tratta.getServiziList().stream().anyMatch(servizio1 -> servizio1.getDataFine() == null)) throw new TrattaGiaPercorsaException(); // CREATA ECCEZIONE TRATTA GIA PERCORSA DA UN ALTRO VEICOLO
         veicoloPubblico.setInServizio(true);
         Servizio servizio = new Servizio(veicoloPubblico, tratta);
         EntityTransaction transaction = entityManager.getTransaction();

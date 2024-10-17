@@ -6,6 +6,9 @@ import CarmineGargiulo.enums.TipoAbbonamento;
 import CarmineGargiulo.enums.TipoManutenzione;
 import CarmineGargiulo.enums.TipoVeicolo;
 import CarmineGargiulo.exceptions.AbbonamentoDateException;
+import CarmineGargiulo.exceptions.TrattaGiaPercorsaException;
+import CarmineGargiulo.exceptions.VeicoloGiaInServizioException;
+import CarmineGargiulo.exceptions.VeicoloInManutenzioneException;
 import com.github.javafaker.Faker;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
@@ -34,7 +37,7 @@ public class Application {
 
         generaStoricoVeicoli(veicoloDAO, manutenzioneDao, servizioDao, tratteDao);
 
-        VeicoloPubblico veicoloPubblicofromDb = veicoloDAO.findVeicoloById("6f323736-f760-4fb8-9036-63e0e5fab094");
+        VeicoloPubblico veicoloPubblicofromDb = veicoloDAO.findVeicoloById("c422099a-a0c0-40fa-9c9d-d82399048b10");
         manutenzioneDao.terminaManutenzione(veicoloPubblicofromDb);
 
         em.close();
@@ -238,11 +241,11 @@ public class Application {
 
             if (manutenzioni.isEmpty()) {
                 System.out.println("   ");
-                System.out.println("Non è presente nessuna manutenzione per il veicolo: " + veicolo.getVeicoloId());
+                System.out.println("Non è presente nessuna manutenzione per il veicolo con targa: " + veicolo.getTarga());
             } else {
 
                 System.out.println("   ");
-                System.out.println("Manutenzioni per il veicolo: " + veicolo.getVeicoloId());
+                System.out.println("Manutenzioni per il veicolo con targa: " + veicolo.getTarga());
                 for (Manutenzione manutenzione : manutenzioni) {
                     System.out.println(manutenzione.getTipoManutenzione() + " dal "
                             + manutenzione.getDataInizio() + " al " + manutenzione.getDataFine());
@@ -256,11 +259,11 @@ public class Application {
 
             if (servizi.isEmpty()) {
                 System.out.println("   ");
-                System.out.println("Non è presente nessun servizio in archivio per il veicolo: " + veicolo.getVeicoloId());
+                System.out.println("Non è presente nessun servizio in archivio per il veicolo con targa: " + veicolo.getTarga());
             } else {
 
                 System.out.println("   ");
-                System.out.println("lista dei periodi di servizio per il veicolo: " + veicolo.getVeicoloId());
+                System.out.println("lista dei periodi di servizio per il veicolo con targa: " + veicolo.getTarga());
                 for (Servizio servizio : servizi) {
                     System.out.println(servizio.getServizio_id() + " dal "
                             + servizio.getDataInizio() + " al " + servizio.getDataFine());
@@ -273,10 +276,10 @@ public class Application {
 
             if (serviziAttuali.isEmpty()) {
                 System.out.println("   ");
-                System.out.println("Il veicolo: " + veicolo.getVeicoloId() + " non è attualmente in servizio.");
+                System.out.println("Il veicolo con targa: " + veicolo.getTarga() + " non è attualmente in servizio.");
             } else {
                 System.out.println("   ");
-                System.out.println("Servizi attuali per il veicolo: " + veicolo.getVeicoloId() + ":");
+                System.out.println("Servizi attuali per il veicolo con targa: " + veicolo.getTarga() + ":");
                 for (Servizio servizio : serviziAttuali) {
                     System.out.println("Servizio ID: " + servizio.getServizio_id() + " iniziato il "
                             + servizio.getDataInizio() + ", in corso.");
@@ -289,23 +292,32 @@ public class Application {
 
             if (manutenzioniAttuali.isEmpty()) {
                 System.out.println("   ");
-                System.out.println("Il veicolo: " + veicolo.getVeicoloId() + " non è attualmente in manutenzione.");
+                System.out.println("Il veicolo con targa: " + veicolo.getTarga() + " non è attualmente in manutenzione.");
             } else {
                 System.out.println("   ");
-                System.out.println("Il veicolo: " + veicolo.getVeicoloId() + "è attualmente in manutenzione" );
+                System.out.println("Il veicolo con targa: " + veicolo.getTarga() + "è attualmente in manutenzione" );
                 for (Manutenzione manutenzione : manutenzioniAttuali) {
-                    System.out.println("Manutenzione ID: " + manutenzione.getManutenzioneId() + " iniziato il "
+                    System.out.println("Manutenzione: " + manutenzione.getTipoManutenzione() + " con ID" + manutenzione.getManutenzioneId() + " iniziato il "
                             + manutenzione.getDataInizio() + ", in corso.");
                 }
             }
         }
 
 
-        if(servizioDao.controlloServiziAttivi().isEmpty()){
+        if (servizioDao.controlloServiziAttivi().isEmpty()) {
             for (int i = 0; i < 6; i++) {
-                servizioDao.mettiInServizio(veicoli.get(i), tratte.get(i));
+                try {
+                    servizioDao.mettiInServizio(veicoli.get(i), tratte.get(i));
+                } catch (VeicoloInManutenzioneException e) {
+                    System.out.println(  e.getMessage());
+                } catch (VeicoloGiaInServizioException e) {
+                    System.out.println( e.getMessage());
+                } catch (TrattaGiaPercorsaException e) {
+                    System.out.println( e.getMessage());
+                }
             }
         }
+
 
 
     }
