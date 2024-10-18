@@ -5,6 +5,7 @@ import CarmineGargiulo.entities.*;
 import CarmineGargiulo.enums.TipoAbbonamento;
 import CarmineGargiulo.enums.TipoManutenzione;
 import CarmineGargiulo.enums.TipoVeicolo;
+import CarmineGargiulo.exceptions.AbbonamentoDateException;
 import com.github.javafaker.Faker;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
