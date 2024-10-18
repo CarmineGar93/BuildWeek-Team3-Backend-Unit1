@@ -51,6 +51,26 @@ public class VeicoloDAO {
         return query.getSingleResult() > 0;
     }
 
+    public void getStoricoVeicolo(VeicoloPubblico veicolo) {
+        long manutenzioniCount = contaManutenzioniPerVeicolo(veicolo);
+        long serviziCount = contaServiziPerVeicolo(veicolo);
 
+        System.out.println("Storico del veicolo con targa: " + veicolo.getTarga());
+        System.out.println("Numero di manutenzioni: " + manutenzioniCount);
+        System.out.println("Numero di servizi: " + serviziCount);
+    }
 
+    public long contaManutenzioniPerVeicolo(VeicoloPubblico veicolo) {
+        return entityManager.createQuery(
+                        "SELECT COUNT(m) FROM Manutenzione m WHERE m.veicoloPubblico = :veicolo", Long.class)
+                .setParameter("veicolo", veicolo)
+                .getSingleResult();
+    }
+
+    public long contaServiziPerVeicolo(VeicoloPubblico veicolo) {
+        return entityManager.createQuery(
+                        "SELECT COUNT(s) FROM Servizio s WHERE s.veicoloPubblico = :veicolo", Long.class)
+                .setParameter("veicolo", veicolo)
+                .getSingleResult();
+    }
 }
