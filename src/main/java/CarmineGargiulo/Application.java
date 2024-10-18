@@ -33,8 +33,6 @@ public class Application {
         if (!DatabasePopolato(titoloViaggioDao, veicoloDAO)) {
             System.out.println("Inizializzazione del database con dati di esempio...");
             inizializzaDb(puntoVenditaDAO, tratteDao, utenteDao, tessereDAO, titoloViaggioDao, veicoloDAO, manutenzioneDao, servizioDao, em);
-        } else {
-            // System.out.println("Database già popolato. Inizializzazione saltata.");
         }
 
         MenuInterattivo menuInterattivo = new MenuInterattivo(
