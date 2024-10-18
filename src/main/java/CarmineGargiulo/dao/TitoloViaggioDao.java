@@ -20,21 +20,11 @@ public class TitoloViaggioDao {
     }
 
     public void salvaTitoloViaggio(TitoloViaggio titoloViaggio) {
-        String descrizione;
-        if (titoloViaggio instanceof Biglietto) {
-            descrizione = faker.commerce().productName() + " - " + faker.number().digits(5);
-        } else if (titoloViaggio instanceof Abbonamento) {
-            descrizione = faker.book().title() + " - " + faker.number().digits(5);
-        } else {
-            descrizione = "Titolo di viaggio generico - " + faker.number().digits(5);
-        }
-
         if (titoloViaggio instanceof Abbonamento) {
             Abbonamento abbonamento = (Abbonamento) titoloViaggio;
             if (abbonamento.getTessera().getDataScadenza().isBefore(LocalDate.now())) {
                 throw new TesseraScadutaException();
             }
-
             List<Abbonamento> abbonamentiList = getAllAbbonamentiByTessera(abbonamento.getTessera());
             if (!abbonamentiList.isEmpty()) {
                 if (abbonamentiList.stream().anyMatch(a -> abbonamento.getDataInizio().isBefore(a.getDataFine()))) {
@@ -42,13 +32,12 @@ public class TitoloViaggioDao {
                 }
             }
         }
-
         EntityTransaction transaction = entityManager.getTransaction();
         transaction.begin();
         entityManager.persist(titoloViaggio);
         transaction.commit();
 
-        System.out.println("\nTitolo di viaggio '" + descrizione + "' salvato correttamente.");
+        System.out.println(titoloViaggio instanceof Biglietto ? "Biglietto ": "Abbonamento " + titoloViaggio.getTitoloViaggio_id() + " comprato correttamente");
     }
 
     public List<TitoloViaggio> ottieniListaTitoliViaggio() {
