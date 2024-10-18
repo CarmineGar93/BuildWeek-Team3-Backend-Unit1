@@ -29,16 +29,15 @@ public class Application {
         VeicoloDAO veicoloDAO = new VeicoloDAO(em);
         ManutenzioneDao manutenzioneDao = new ManutenzioneDao(em);
         ServizioDao servizioDao = new ServizioDao(em);
+        MenuInterattivo menuInterattivo = new MenuInterattivo(em);
+        if(!puntoVenditaDAO.ottieniListaPuntiVendita().isEmpty()) menuInterattivo.avviaMenu();
+
 
         if (!DatabasePopolato(titoloViaggioDao, veicoloDAO)) {
             System.out.println("Inizializzazione del database con dati di esempio...");
             inizializzaDb(puntoVenditaDAO, tratteDao, utenteDao, tessereDAO, titoloViaggioDao, veicoloDAO, manutenzioneDao, servizioDao, em);
         }
 
-        MenuInterattivo menuInterattivo = new MenuInterattivo(
-                puntoVenditaDAO, tratteDao, utenteDao, tessereDAO, titoloViaggioDao, veicoloDAO, manutenzioneDao, servizioDao
-        );
-        menuInterattivo.mostraMenu();
 
         em.close();
         emf.close();
@@ -103,51 +102,110 @@ public class Application {
                 }
             }
 
-            if (veicoloDAO.ottieniListaVeicoli().isEmpty()) {
-                for (int i = 0; i < 6; i++) {
-                    VeicoloPubblico veicoloPubblico = new VeicoloPubblico(
-                            faker.bothify("??###??").toUpperCase(),
-                            TipoVeicolo.TRAM
-                    );
-                    veicoloDAO.salvaVeicolo(veicoloPubblico);
+        if (titoloViaggioDao.ottieniListaTitoliViaggio().isEmpty()) {
+            List<PuntoVendita> puntoVenditaList = puntoVenditaDAO.ottieniListaPuntiVendita();
+            List<Tessera> tesseraList = tessereDAO.ottieniListaTessere();
+            List<TipoAbbonamento> tipiList = Arrays.asList(TipoAbbonamento.values());
+
+            for (int i = 0; i < 30; i++) {
+                boolean random = faker.random().nextBoolean();
+                PuntoVendita puntoRandom;
+                while (true) {
+                    puntoRandom = puntoVenditaList.get(faker.random().nextInt(0, puntoVenditaList.size() - 1));
+                    if (puntoRandom instanceof RivenditoreAutorizzato) break;
+                    else if (((Distributore) puntoRandom).isAttivo()) break;
                 }
-                for (int i = 0; i < 6; i++) {
-                    VeicoloPubblico veicoloPubblico = new VeicoloPubblico(
-                            faker.bothify("??###??").toUpperCase(),
-                            TipoVeicolo.AUTOBUS
+
+                if (random) {
+                    Biglietto biglietto = new Biglietto(
+                            Double.parseDouble(faker.commerce().price().replace(",", ".")),
+                            LocalDate.of(faker.random().nextInt(2020, 2024),
+                                    faker.random().nextInt(1, 12),
+                                    faker.random().nextInt(1, 27)),
+                            puntoRandom
                     );
-                    veicoloDAO.salvaVeicolo(veicoloPubblico);
+                    titoloViaggioDao.salvaTitoloViaggio(biglietto);
+                } else {
+                    Abbonamento abbonamento = new Abbonamento(
+                            Double.parseDouble(faker.commerce().price().replace(",", ".")),
+                            LocalDate.of(faker.random().nextInt(2020, 2024),
+                                    faker.random().nextInt(1, 12),
+                                    faker.random().nextInt(1, 27)),
+                            puntoRandom,
+                            LocalDate.now(),
+                            tipiList.get(faker.random().nextInt(0, tipiList.size())),
+                            tesseraList.get(faker.random().nextInt(0, tesseraList.size()))
+                    );
+                    try {
+                        titoloViaggioDao.salvaTitoloViaggio(abbonamento);
+                    } catch (Exception e) {
+                        System.out.println("Errore nell'acquisto dell'abbonamento: " + e.getMessage());
+                    }
                 }
             }
+        }
 
-            List<VeicoloPubblico> veicoli = veicoloDAO.ottieniListaVeicoli();
-            List<Tratta> tratte = tratteDao.ottieniListaTratte();
+        if (veicoloDAO.ottieniListaVeicoli().isEmpty()) {
+            for (int i = 0; i < 6; i++) {
+                VeicoloPubblico veicoloPubblico = new VeicoloPubblico(
+                        faker.bothify("??###??").toUpperCase(),
+                        TipoVeicolo.TRAM
+                );
+                veicoloDAO.salvaVeicolo(veicoloPubblico);
+            }
+            for (int i = 0; i < 6; i++) {
+                VeicoloPubblico veicoloPubblico = new VeicoloPubblico(
+                        faker.bothify("??###??").toUpperCase(),
+                        TipoVeicolo.AUTOBUS
+                );
+                veicoloDAO.salvaVeicolo(veicoloPubblico);
+            }
+        }
+    }
 
-            if (!veicoli.isEmpty()) {
-                em.getTransaction().begin();
+    public static void generaStoricoVeicoli(
+            VeicoloDAO veicoloDAO,
+            ManutenzioneDao manutenzioneDao,
+            ServizioDao servizioDao,
+            TratteDao tratteDao) {
 
-                for (VeicoloPubblico veicolo : veicoli) {
-                    veicolo.setInServizio(false);
-                    veicolo.setInManutenzione(false);
-                }
+        List<VeicoloPubblico> veicoli = veicoloDAO.ottieniListaVeicoli();
+        List<Tratta> tratte = tratteDao.ottieniListaTratte();
+        Set<String> nomiGenerati = new HashSet<>();
 
-                for (int i = 0; i < 5; i++) {
-                    VeicoloPubblico veicolo = veicoli.get(i);
-                    Tratta tratta = tratte.get(faker.random().nextInt(0, tratte.size()));
-                    Servizio servizio = new Servizio(veicolo, tratta);
-                    veicolo.setInServizio(true);
-                    em.persist(servizio);
-                }
+        if (tratte.isEmpty()) {
+            System.out.println("Nessuna tratta disponibile per generare servizi. Aggiungi tratte nel database.");
+            return;
+        }
 
-                for (int i = 5; i < 9; i++) {
-                    VeicoloPubblico veicolo = veicoli.get(i);
+        int[] numeroManutenzioni = {4, 6, 9, 3, 9, 4, 2, 6, 7, 3, 3, 7};
+        int[] numeroServizi = {5, 8, 5, 4, 7, 6, 5, 7, 8, 6, 3, 3};
+
+        int index = 0;
+        for (VeicoloPubblico veicolo : veicoli) {
+            String nomeVeicolo;
+            do {
+                nomeVeicolo = faker.ancient().god();
+            } while (!nomiGenerati.add(nomeVeicolo));
+
+            long manutenzioniPresenti = manutenzioneDao.contaManutenzioniPerVeicolo(veicolo);
+            long serviziPresenti = servizioDao.contaServiziPerVeicolo(veicolo);
+
+            boolean manutenzioniAggiornate = false;
+            boolean serviziAggiornati = false;
+
+            if (manutenzioniPresenti < numeroManutenzioni[index]) {
+                int manutenzioniDaCreare = numeroManutenzioni[index] - (int) manutenzioniPresenti;
+                for (int i = 0; i < manutenzioniDaCreare; i++) {
                     Manutenzione manutenzione = new Manutenzione(
-                            TipoManutenzione.values()[faker.random().nextInt(0, TipoManutenzione.values().length)], veicolo);
-                    veicolo.setInManutenzione(true);
-                    em.persist(manutenzione);
+                            LocalDate.now().minusMonths(faker.random().nextInt(1, 12)),
+                            LocalDate.now().minusMonths(faker.random().nextInt(1, 6)),
+                            TipoManutenzione.values()[faker.random().nextInt(TipoManutenzione.values().length)],
+                            veicolo
+                    );
+                    manutenzioneDao.salvaManutenzione(manutenzione);
                 }
-
-                em.getTransaction().commit();
+                manutenzioniAggiornate = true;
             }
 
             if (!bigliettiObliteratiInizializzati) {
@@ -173,6 +231,29 @@ public class Application {
                 }
                 bigliettiObliteratiInizializzati = true;
             }
+            if (serviziPresenti < numeroServizi[index]) {
+                int serviziDaCreare = numeroServizi[index] - (int) serviziPresenti;
+                Tratta trattaAssociata = tratte.get(index % tratte.size());
+                for (int j = 0; j < serviziDaCreare; j++) {
+                    Servizio servizio = new Servizio(
+                            LocalDate.now().minusMonths(faker.random().nextInt(1, 12)),
+                            LocalDate.now().minusMonths(faker.random().nextInt(1, 6)),
+                            veicolo,
+                            trattaAssociata
+                    );
+                    servizioDao.salvaServizio(servizio);
+                }
+                serviziAggiornati = true;
+            }
+
+            index++;
+        }
+
+        if (servizioDao.controlloServiziAttivi().isEmpty()) {
+            for (int i = 0; i < 6; i++) {
+                servizioDao.mettiInServizio(veicoli.get(i), tratte.get(i));
+            }
+        }
 
             System.out.println("Inizializzazione completata con successo.");
         } catch (Exception e) {

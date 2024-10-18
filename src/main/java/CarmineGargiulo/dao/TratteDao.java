@@ -36,5 +36,9 @@ public class TratteDao {
         return query.getResultList();
     }
 
+   /* public List<Tratta> ottieniTratteScoperte(){
+        *//*TypedQuery<Tratta> query = entityManager.createQuery("SELECT t FROM Tratta t JOIN Servizio s WHERE s.dataFine IS NULL");*//*
+    }*/
+
 }
 
