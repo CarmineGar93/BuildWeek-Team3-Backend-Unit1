@@ -16,7 +16,7 @@ import java.util.Locale;
 public class Application {
     private static final EntityManagerFactory emf = Persistence.createEntityManagerFactory("azienda-trasporti");
     private static final Faker faker = new Faker(Locale.ITALY);
-    private static boolean bigliettiObliteratiInizializzati = false; // Flag per gestire l'inserimento di biglietti obliterati
+    private static boolean bigliettiObliteratiInizializzati = false;
 
     public static void main(String[] args) {
         EntityManager em = emf.createEntityManager();
