@@ -37,7 +37,7 @@ public class TitoloViaggioDao {
         entityManager.persist(titoloViaggio);
         transaction.commit();
 
-        System.out.println(titoloViaggio instanceof Biglietto ? "Biglietto ": "Abbonamento " + titoloViaggio.getTitoloViaggio_id() + " comprato correttamente");
+        System.out.println((titoloViaggio instanceof Biglietto ? "Biglietto ": "Abbonamento ") + titoloViaggio.getTitoloViaggio_id() + " comprato correttamente");
     }
 
     public List<TitoloViaggio> ottieniListaTitoliViaggio() {
@@ -84,7 +84,7 @@ public class TitoloViaggioDao {
         transaction.begin();
         entityManager.persist(biglietto1);
         transaction.commit();
-        System.out.println("Biglietto con descrizione '" + faker.commerce().productName() + " - " + faker.number().digits(5) + "' convalidato correttamente.");
+        System.out.println("Biglietto con id " + bigliettoId + " convalidato correttamente.");
     }
 
     public List<Biglietto> ottieniBigliettiObliteratiPerVeicolo(VeicoloPubblico veicoloPubblico) {

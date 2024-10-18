@@ -24,7 +24,7 @@ public class TessereDAO {
         transaction.begin();
         entityManager.persist(tessera);
         transaction.commit();
-        System.out.println("Tessera " + tessera.getTesseraId() + " salvato correttamente" );
+        System.out.println("Tessera " + tessera.getTesseraId() + " acquistata correttamente" );
     }
 
     public List<Tessera> ottieniListaTessere(){
@@ -51,10 +51,9 @@ public class TessereDAO {
         }
     }
 
-    public boolean verificaValiditaAbbonamento(Utente utente){
-        if (utente.getTessera() == null) throw new NotFoundException("tessera", "utente");
+    public boolean verificaValiditaAbbonamento(Tessera tessera){
         TypedQuery<Abbonamento> query = entityManager.createQuery("SELECT a FROM Abbonamento a WHERE a.tessera = :tessera AND a.dataFine > :date ", Abbonamento.class);
-        query.setParameter("tessera", utente.getTessera());
+        query.setParameter("tessera", tessera);
         query.setParameter("date", LocalDate.now());
         return !query.getResultList().isEmpty();
     }

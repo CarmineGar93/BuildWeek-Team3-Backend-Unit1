@@ -21,7 +21,7 @@ public class UtenteDao {
         transaction.begin();
         entityManager.persist(utente);
         transaction.commit();
-        System.out.println("Utente" + utente.getNominativo() + " salvato correttamente" );
+        System.out.println("Utente " + utente.getNominativo() + " salvato correttamente" );
     }
 
     public List<Utente> ottieniListaUtenti(){
