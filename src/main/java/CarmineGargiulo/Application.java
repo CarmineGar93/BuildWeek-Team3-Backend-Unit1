@@ -34,6 +34,7 @@ public class Application {
         ServizioDao servizioDao = new ServizioDao(em);
         MenuInterattivo menuInterattivo = new MenuInterattivo(em);
         inizializzaDb(puntoVenditaDAO, tratteDao, utenteDao, tessereDAO, titoloViaggioDao, veicoloDAO, manutenzioneDao, servizioDao, em);
+        generaStoricoVeicoli(veicoloDAO, manutenzioneDao, servizioDao, tratteDao, puntoVenditaDAO);
         if(!puntoVenditaDAO.ottieniListaPuntiVendita().isEmpty()) menuInterattivo.avviaMenu();
 
 

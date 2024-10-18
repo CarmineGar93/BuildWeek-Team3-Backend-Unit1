@@ -43,6 +43,7 @@ public class MenuInterattivo {
             System.out.println("6) Terminare un servizio ad un veicolo");
             System.out.println("7) Assegnare una manutenzione ad un veicolo");
             System.out.println("8) Terminare una manutenzione ad un veicolo");
+            System.out.println("9) Conta servizi/manutenzioni per veicolo");
             System.out.println("0) Esci");
 
             int scelta = scanner.nextInt();
@@ -72,6 +73,8 @@ public class MenuInterattivo {
                     break;
                 case 8:
                     terminaManutenzione();
+                case 9:
+                    numeroManutenzioniServizi();
                 case 0:
                     System.out.println("\nUscita dal sistema amministratore.");
                     return;
@@ -80,10 +83,16 @@ public class MenuInterattivo {
             }
         }
     }
+
+    private void numeroManutenzioniServizi(){
+        VeicoloPubblico veicoloPubblico = selezioneVeicolo();
+        System.out.println("Il numero di servizi del veicolo " + veicoloPubblico.getTarga() + " è di: " + servizioDao.contaServiziPerVeicolo(veicoloPubblico));
+        System.out.println("Il numero di manutenzioni del veicolo " + veicoloPubblico.getTarga() + " è di: " + manutenzioneDao.contaManutenzioniPerVeicolo(veicoloPubblico));
+    }
     private VeicoloPubblico selezioneVeicolo(){
         List<VeicoloPubblico> veicoli = veicoloDAO.ottieniListaVeicoli();
         System.out.println("Scegli un veicolo");
-        for (int i = 1; i < veicoli.size(); i++) {
+        for (int i = 1; i < veicoli.size() + 1; i++) {
             System.out.println(i + ") " + veicoli.get(i - 1).getTarga());
         }
         int scelta;
