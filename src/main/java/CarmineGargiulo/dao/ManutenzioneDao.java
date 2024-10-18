@@ -17,7 +17,7 @@ public class ManutenzioneDao {
         this.entityManager = entityManager;
     }
 
-    public static void mettiInManutenzione(VeicoloPubblico veicoloPubblico, TipoManutenzione tipoManutenzione) {
+    public void mettiInManutenzione(VeicoloPubblico veicoloPubblico, TipoManutenzione tipoManutenzione) {
         if (veicoloPubblico.isInServizio()) throw new ManutenzioneOrServizioException("in servizio", true);
         if (veicoloPubblico.isInManutenzione()) throw new ManutenzioneOrServizioException("già in manutenzione", true);
         veicoloPubblico.setInManutenzione(true);

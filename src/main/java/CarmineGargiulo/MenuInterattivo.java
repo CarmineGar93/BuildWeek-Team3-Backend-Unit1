@@ -3,13 +3,12 @@ package CarmineGargiulo;
 import CarmineGargiulo.dao.*;
 import CarmineGargiulo.entities.*;
 import CarmineGargiulo.enums.TipoAbbonamento;
+import CarmineGargiulo.enums.TipoManutenzione;
 import CarmineGargiulo.exceptions.*;
 import jakarta.persistence.EntityManager;
 
 import java.time.LocalDate;
-import java.util.List;
-import java.util.Optional;
-import java.util.Scanner;
+import java.util.*;
 
 public class MenuInterattivo {
     private final EntityManager em;
@@ -40,8 +39,10 @@ public class MenuInterattivo {
             System.out.println("2) Controllo biglietti obliterati ");
             System.out.println("3) Controllare lista mezzi in manutenzione e in servizio");
             System.out.println("4) Controllare la lista delle linee scoperte da veicoli (S/N)");
-            System.out.println("5) Assegnare un veicolo non ancora in servizio a una linea (S/N)");
-            System.out.println("6) Scegliere se un veicolo deve essere in servizio o in manutenzione");
+            System.out.println("5) Assegnare un servizio ad un veicolo");
+            System.out.println("6) Terminare un servizio ad un veicolo");
+            System.out.println("7) Assegnare una manutenzione ad un veicolo");
+            System.out.println("8) Terminare una manutenzione ad un veicolo");
             System.out.println("0) Esci");
 
             int scelta = scanner.nextInt();
@@ -58,20 +59,107 @@ public class MenuInterattivo {
                     sottoscelteControlloMezzi();
                     break;
                 case 4:
-                    // Codice per controllare la lista delle linee scoperte
+                    tratteScoperte();
                     break;
                 case 5:
-                    // Codice per assegnare un veicolo a una linea
+                    mettiInServizio();
                     break;
                 case 6:
-                    // Codice per gestione veicoli in servizio o manutenzione
+                    mettiFuoriServizio();
                     break;
+                case 7:
+                   mettiManutenzione();
+                    break;
+                case 8:
+                    terminaManutenzione();
                 case 0:
                     System.out.println("\nUscita dal sistema amministratore.");
                     return;
                 default:
                     System.out.println("Scelta non valida.");
             }
+        }
+    }
+    private VeicoloPubblico selezioneVeicolo(){
+        List<VeicoloPubblico> veicoli = veicoloDAO.ottieniListaVeicoli();
+        System.out.println("Scegli un veicolo");
+        veicoli.forEach(veicoloPubblico -> System.out.println(veicoloPubblico.getTarga()));
+        int scelta;
+        while (true){
+            scelta = verifyInput();
+            if (scelta < 0 || scelta > veicoli.size()) System.out.println("Devi inserire un numero tra 1 e " + (veicoli.size()));
+            else break;
+        }
+        VeicoloPubblico veicoloPubblico = veicoli.get(scelta - 1);
+        return veicoloPubblico;
+    }
+
+    private void mettiFuoriServizio(){
+        VeicoloPubblico veicoloPubblico = selezioneVeicolo();
+        servizioDao.mettiFuoriServizio(veicoloPubblico);
+    }
+
+    private void mettiManutenzione(){
+        List<TipoManutenzione> tipiList = Arrays.asList(TipoManutenzione.values());
+        VeicoloPubblico veicoloPubblico = selezioneVeicolo();
+        System.out.println("Che tipo di manutenzione deve fare il veicolo? ");
+        System.out.println("1) Controllo centralina");
+        System.out.println("2) Controllo filtri");
+        System.out.println("3) Controllo freni");
+        System.out.println("4) Controllo motore");
+        System.out.println("5) Revisione");
+        int scelta;
+        while (true){
+            scelta = verifyInput();
+            if (scelta < 0 || scelta > 5) System.out.println("Devi inserire un numero tra 1 e 5");
+            else break;
+        }
+        TipoManutenzione tipo = tipiList.get(scelta);
+        manutenzioneDao.mettiInManutenzione(veicoloPubblico, tipo);
+    }
+
+    private void terminaManutenzione(){
+        VeicoloPubblico veicoloPubblico = selezioneVeicolo();
+        manutenzioneDao.terminaManutenzione(veicoloPubblico);
+    }
+
+    private void mettiInServizio(){
+        VeicoloPubblico veicoloPubblico = selezioneVeicolo();
+        System.out.println("Seleziona la tratta: ");
+        List<Tratta> tratte = tratteDao.ottieniListaTratte();
+        if (tratte.isEmpty()) {
+            System.out.println("Fattela a piedi che non ci sono tratte disponibili.");
+            return;
+        }
+        for (int i = 0; i < tratte.size(); i++) {
+            System.out.println((i + 1) + ") " + tratte.get(i).getNomeTratta());
+        }
+        System.out.println("Scegli il numero della tratta: ");
+        int scelta;
+        while (true){
+            scelta = verifyInput();
+            if (scelta < 0 || scelta > tratte.size()) System.out.println("Devi inserire un numero tra 1 e " + (tratte.size()));
+            else break;
+        }
+        Tratta trattaSelezionata = tratte.get(scelta - 1);
+        try {
+            servizioDao.mettiInServizio(veicoloPubblico, trattaSelezionata);
+        }  catch (ManutenzioneOrServizioException | TrattaGiaPercorsaException e){
+            System.out.println(e.getMessage());
+        }
+    }
+
+    private void tratteScoperte(){
+        List<Tratta> tratteList = tratteDao.ottieniListaTratte();
+        List<Tratta> tratteScoperte = new ArrayList<>();
+        for (Tratta tratta : tratteList) {
+            if (tratta.getServiziList().stream().noneMatch(servizio -> servizio.getDataFine() == null))
+                tratteScoperte.add(tratta);
+        }
+        if (tratteScoperte.isEmpty()) System.out.println("Non ci sono tratte scoperte");
+        else {
+            System.out.println("Le tratte scoperte sono: ");
+            tratteScoperte.forEach(System.out::println);
         }
     }
 
