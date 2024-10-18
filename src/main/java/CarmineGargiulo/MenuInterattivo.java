@@ -6,6 +6,7 @@ import CarmineGargiulo.enums.TipoAbbonamento;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.Scanner;
 
 public class MenuInterattivo {
@@ -62,7 +63,8 @@ public class MenuInterattivo {
             System.out.println("0) Esci");
 
             int scelta = scanner.nextInt();
-            scanner.nextLine();
+            scanner.nextLine(); // Consuma il newline
+
             switch (scelta) {
                 case 1:
                     visualizzaVenditePuntiVendita();
@@ -71,7 +73,7 @@ public class MenuInterattivo {
                     controlloBigliettiObliterati();
                     break;
                 case 3:
-                    // Codice per il controllo della lista mezzi in manutenzione o in servizio
+                    sottoscelteControlloMezzi();
                     break;
                 case 4:
                     // Codice per controllare la lista delle linee scoperte
@@ -83,7 +85,7 @@ public class MenuInterattivo {
                     // Codice per gestione veicoli in servizio o manutenzione
                     break;
                 case 0:
-                    System.out.println("Uscita dal sistema amministratore.");
+                    System.out.println("\nUscita dal sistema amministratore.");
                     return;
                 default:
                     System.out.println("Scelta non valida.");
@@ -91,83 +93,81 @@ public class MenuInterattivo {
         }
     }
 
-    private void controlloBigliettiObliterati() {
-        System.out.println("Vuoi controllare i biglietti obliterati? (S/N)");
-        String risposta = scanner.nextLine().trim().toUpperCase();
+    private void sottoscelteControlloMezzi() {
+        while (true) {
+            System.out.println("\nSeleziona l'operazione che desideri effettuare:");
+            System.out.println("1) Visionare quanti mezzi sono in servizio e in che linea");
+            System.out.println("2) Controllare quanti mezzi sono in manutenzione");
+            System.out.println("3) Controllare quanti mezzi sono fermi in azienda");
+            System.out.println("0) Torna al menu principale");
 
-        if (risposta.equals("S")) {
-            while (true) {
-                System.out.println("1) Controllo biglietti obliterati per Periodo");
-                System.out.println("2) Controllo biglietti obliterati per Veicolo");
-                System.out.println("0) Torna al menu principale");
+            int scelta = scanner.nextInt();
+            scanner.nextLine(); // Consuma il newline
 
-                int scelta = scanner.nextInt();
-                scanner.nextLine();
+            switch (scelta) {
+                case 1:
+                    mostraMezziInServizio();
+                    break;
+                case 2:
+                    mostraMezziInManutenzione();
+                    break;
+                case 3:
+                    mostraMezziFermiInAzienda();
+                    break;
+                case 0:
+                    return;
+                default:
+                    System.out.println("Scelta non valida.");
+            }
+        }
+    }
 
-                switch (scelta) {
-                    case 1:
-                        controlloBigliettiObliteratiPerPeriodo();
-                        break;
-                    case 2:
-                        controlloBigliettiObliteratiPerVeicolo();
-                        break;
-                    case 0:
-                        return; // Torna al menu principale
-                    default:
-                        System.out.println("Scelta non valida.");
+    private void mostraMezziInServizio() {
+        List<VeicoloPubblico> veicoli = veicoloDAO.ottieniListaVeicoli();
+
+        System.out.println("\nVeicoli attualmente in servizio:");
+        for (VeicoloPubblico veicolo : veicoli) {
+            if (veicolo.isInServizio()) {
+                Optional<Servizio> servizioAttivo = veicolo.getServiziList().stream()
+                        .filter(servizio -> servizio.getDataFine() == null)
+                        .findFirst();
+
+                if (servizioAttivo.isPresent()) {
+                    System.out.println("Veicolo: " + veicolo.getTarga() + " - Tratta: " + servizioAttivo.get().getTratta().getNomeTratta());
+                } else {
+                    System.out.println("Veicolo: " + veicolo.getTarga() + " - Servizio attivo non trovato.");
                 }
             }
-        } else if (risposta.equals("N")) {
-            System.out.println("Tornando al menu principale...");
-            return;
-        } else {
-            System.out.println("Scelta non valida. Inserisci 'S' o 'N'.");
-            controlloBigliettiObliterati();
         }
     }
 
-
-    private void controlloBigliettiObliteratiPerPeriodo() {
-        System.out.println("Inserisci il numero di giorni per cui vuoi controllare i biglietti obliterati:");
-        int giorni = scanner.nextInt();
-
-        try {
-            List<Biglietto> bigliettiObliterati = titoloViaggioDao.ottientiBigliettiObliteratiPerPeriodo(giorni);
-            if (bigliettiObliterati.isEmpty()) {
-                System.out.println("\nNessun biglietto obliterato negli ultimi " + giorni + " giorni.");
-            } else {
-                System.out.println("\nSono stati obliterati " + bigliettiObliterati.size() + " biglietti negli ultimi " + giorni + " giorni.");
-            }
-        } catch (Exception e) {
-            System.out.println("\nNessun biglietto obliterato negli ultimi " + giorni + " giorni.");
-        }
-    }
-
-    private void controlloBigliettiObliteratiPerVeicolo() {
+    private void mostraMezziInManutenzione() {
         List<VeicoloPubblico> veicoli = veicoloDAO.ottieniListaVeicoli();
-        if (veicoli.isEmpty()) {
-            System.out.println("\nNon ci sono veicoli disponibili.");
-            return;
-        }
 
-        System.out.println("Seleziona un veicolo per visualizzare i biglietti obliterati:");
-        for (int i = 0; i < veicoli.size(); i++) {
-            System.out.println((i + 1) + ". " + veicoli.get(i).getTarga());
-        }
+        System.out.println("\nVeicoli attualmente in manutenzione:");
+        for (VeicoloPubblico veicolo : veicoli) {
+            if (veicolo.isInManutenzione()) {
+                Optional<Manutenzione> manutenzioneAttiva = veicolo.getManutenzionList().stream()
+                        .filter(manutenzione -> manutenzione.getDataFine() == null)
+                        .findFirst();
 
-        int scelta = scanner.nextInt();
-
-        if (scelta > 0 && scelta <= veicoli.size()) {
-            VeicoloPubblico veicoloScelto = veicoli.get(scelta - 1);
-            List<Biglietto> bigliettiObliterati = titoloViaggioDao.ottieniBigliettiObliteratiPerVeicolo(veicoloScelto);
-
-            if (bigliettiObliterati.isEmpty()) {
-                System.out.println("\nNessun biglietto obliterato per il veicolo con targa " + veicoloScelto.getTarga());
-            } else {
-                System.out.println("\nSono stati obliterati " + bigliettiObliterati.size() + " biglietti per il veicolo con targa " + veicoloScelto.getTarga());
+                if (manutenzioneAttiva.isPresent()) {
+                    System.out.println("\nVeicolo: " + veicolo.getTarga() + " - Tipo Manutenzione: " + manutenzioneAttiva.get().getTipoManutenzione());
+                } else {
+                    System.out.println("\nVeicolo: " + veicolo.getTarga() + " - Manutenzione attiva non trovata.");
+                }
             }
-        } else {
-            System.out.println("Scelta non valida.");
+        }
+    }
+
+    private void mostraMezziFermiInAzienda() {
+        List<VeicoloPubblico> veicoli = veicoloDAO.ottieniListaVeicoli();
+
+        System.out.println("\nVeicoli fermi in azienda (non in servizio o manutenzione):");
+        for (VeicoloPubblico veicolo : veicoli) {
+            if (!veicolo.isInServizio() && !veicolo.isInManutenzione()) {
+                System.out.println("\nVeicolo: " + veicolo.getTarga());
+            }
         }
     }
 
@@ -196,6 +196,84 @@ public class MenuInterattivo {
                     titoloViaggioDao.getAllTitoliViaggioPerPuntoVendita(puntoVendita).stream().filter(t -> t instanceof Abbonamento).count());
         } else {
             System.out.println("\nScelta non valida.");
+        }
+    }
+
+    private void controlloBigliettiObliterati() {
+        System.out.println("\nVuoi controllare i biglietti obliterati? (S/N)");
+        String risposta = scanner.nextLine().trim().toUpperCase();
+
+        if (risposta.equals("S")) {
+            while (true) {
+                System.out.println("1) Controllo biglietti obliterati per Periodo");
+                System.out.println("2) Controllo biglietti obliterati per Veicolo");
+                System.out.println("0) Torna al menu principale");
+
+                int scelta = scanner.nextInt();
+                scanner.nextLine();
+
+                switch (scelta) {
+                    case 1:
+                        controlloBigliettiObliteratiPerPeriodo();
+                        break;
+                    case 2:
+                        controlloBigliettiObliteratiPerVeicolo();
+                        break;
+                    case 0:
+                        return;
+                    default:
+                        System.out.println("Scelta non valida.");
+                }
+            }
+        } else if (risposta.equals("N")) {
+            System.out.println("Tornando al menu principale...");
+        } else {
+            System.out.println("Scelta non valida. Inserisci 'S' o 'N'.");
+            controlloBigliettiObliterati();
+        }
+    }
+
+    private void controlloBigliettiObliteratiPerPeriodo() {
+        System.out.println("\nInserisci il numero di giorni per cui vuoi controllare i biglietti obliterati:");
+        int giorni = scanner.nextInt();
+
+        try {
+            List<Biglietto> bigliettiObliterati = titoloViaggioDao.ottientiBigliettiObliteratiPerPeriodo(giorni);
+            if (bigliettiObliterati.isEmpty()) {
+                System.out.println("\nNessun biglietto obliterato negli ultimi " + giorni + " giorni.");
+            } else {
+                System.out.println("\nSono stati obliterati " + bigliettiObliterati.size() + " biglietti negli ultimi " + giorni + " giorni.");
+            }
+        } catch (Exception e) {
+            System.out.println("\nNessun biglietto obliterato negli ultimi " + giorni + " giorni.");
+        }
+    }
+
+    private void controlloBigliettiObliteratiPerVeicolo() {
+        List<VeicoloPubblico> veicoli = veicoloDAO.ottieniListaVeicoli();
+        if (veicoli.isEmpty()) {
+            System.out.println("\nNon ci sono veicoli disponibili.");
+            return;
+        }
+
+        System.out.println("\nSeleziona un veicolo per visualizzare i biglietti obliterati:");
+        for (int i = 0; i < veicoli.size(); i++) {
+            System.out.println((i + 1) + ". " + veicoli.get(i).getTarga());
+        }
+
+        int scelta = scanner.nextInt();
+
+        if (scelta > 0 && scelta <= veicoli.size()) {
+            VeicoloPubblico veicoloScelto = veicoli.get(scelta - 1);
+            List<Biglietto> bigliettiObliterati = titoloViaggioDao.ottieniBigliettiObliteratiPerVeicolo(veicoloScelto);
+
+            if (bigliettiObliterati.isEmpty()) {
+                System.out.println("\nNessun biglietto obliterato per il veicolo con targa " + veicoloScelto.getTarga());
+            } else {
+                System.out.println("\nSono stati obliterati " + bigliettiObliterati.size() + " biglietti per il veicolo con targa " + veicoloScelto.getTarga());
+            }
+        } else {
+            System.out.println("Scelta non valida.");
         }
     }
 
