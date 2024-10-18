@@ -53,9 +53,18 @@ public class MenuInterattivo {
                     System.out.println("Logout da amministratore");
                     break;
                 }
+                case 1 -> System.out.println("ciao");//cose;
+                case 2 -> System.out.println("arrivederci");//cose;
+                case 3 -> System.out.println("buongiorno");//cose;
+                case 4 -> System.out.println("bounasera");//cose;
+                case 5 -> System.out.println("buonanotte");
+
             }
         }
 
+    }
+
+    private void tratteScoperte(){
 
     }
 
