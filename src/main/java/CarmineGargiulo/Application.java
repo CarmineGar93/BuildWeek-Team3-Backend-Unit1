@@ -33,9 +33,10 @@ public class Application {
         ManutenzioneDao manutenzioneDao = new ManutenzioneDao(em);
         ServizioDao servizioDao = new ServizioDao(em);
         MenuInterattivo menuInterattivo = new MenuInterattivo(em);
+        inizializzaDb(puntoVenditaDAO, tratteDao, utenteDao, tessereDAO, titoloViaggioDao, veicoloDAO, manutenzioneDao, servizioDao, em);
         if(!puntoVenditaDAO.ottieniListaPuntiVendita().isEmpty()) menuInterattivo.avviaMenu();
 
-        inizializzaDb(puntoVenditaDAO, tratteDao, utenteDao, tessereDAO, titoloViaggioDao, veicoloDAO, manutenzioneDao, servizioDao, em);
+
 
 
 
@@ -175,7 +176,7 @@ public class Application {
                     List<PuntoVendita> puntiVendita = puntoVenditaDAO.ottieniListaPuntiVendita();
                     for (int i = 0; i < 10; i++) {
                         PuntoVendita puntoVendita = puntiVendita.get(faker.random().nextInt(0, puntiVendita.size() - 1));
-                        VeicoloPubblico veicolo2 = veicoli.get(faker.random().nextInt(0, veicoli.size()));
+                        VeicoloPubblico veicolo2 = veicoli.get(faker.random().nextInt(0, veicoli.size() - 1));
 
                         Biglietto biglietto = new Biglietto(
                                 Double.parseDouble(faker.commerce().price().replace(",", ".")),
