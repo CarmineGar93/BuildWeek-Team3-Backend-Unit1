@@ -8,6 +8,9 @@ Funzionalità principali:
 
 
  Gestione mezzi pubblici: aggiunta, modifica, eliminazione e visualizzazione dei dettagli dei mezzi.
+ 
  Gestione tratte: aggiunta di tratte con specifici punti di partenza, arrivo e tempo medio di percorrenza.
+ 
  Gestione abbonamenti e biglietti: creazione, modifica, cancellazione e visualizzazione di abbonamenti e biglietti associati agli utenti.
+ 
  CRUD completo: operazioni di creazione, lettura, aggiornamento e cancellazione per ogni entità del sistema.
