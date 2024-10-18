@@ -30,11 +30,11 @@ public class Application {
         ManutenzioneDao manutenzioneDao = new ManutenzioneDao(em);
         ServizioDao servizioDao = new ServizioDao(em);
 
-        if (!isDatabasePopulated(titoloViaggioDao, veicoloDAO)) {
+        if (!DatabasePopolato(titoloViaggioDao, veicoloDAO)) {
             System.out.println("Inizializzazione del database con dati di esempio...");
             inizializzaDb(puntoVenditaDAO, tratteDao, utenteDao, tessereDAO, titoloViaggioDao, veicoloDAO, manutenzioneDao, servizioDao, em);
         } else {
-            System.out.println("Database già popolato. Inizializzazione saltata.");
+            // System.out.println("Database già popolato. Inizializzazione saltata.");
         }
 
         MenuInterattivo menuInterattivo = new MenuInterattivo(
@@ -182,7 +182,7 @@ public class Application {
         }
     }
 
-    public static boolean isDatabasePopulated(TitoloViaggioDao titoloViaggioDao, VeicoloDAO veicoloDAO) {
+    public static boolean DatabasePopolato(TitoloViaggioDao titoloViaggioDao, VeicoloDAO veicoloDAO) {
         return !titoloViaggioDao.ottieniListaTitoliViaggio().isEmpty() && !veicoloDAO.ottieniListaVeicoli().isEmpty();
     }
 }
