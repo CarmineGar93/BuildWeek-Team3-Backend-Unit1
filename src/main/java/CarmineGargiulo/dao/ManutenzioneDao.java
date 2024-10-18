@@ -11,10 +11,22 @@ import java.time.LocalDate;
 import java.util.Optional;
 
 public class ManutenzioneDao {
-    private final EntityManager entityManager;
+    private static EntityManager entityManager = null;
 
     public ManutenzioneDao(EntityManager entityManager) {
         this.entityManager = entityManager;
+    }
+
+    public static void mettiInManutenzione(VeicoloPubblico veicoloPubblico, TipoManutenzione tipoManutenzione) {
+        if (veicoloPubblico.isInServizio()) throw new ManutenzioneOrServizioException("in servizio", true);
+        if (veicoloPubblico.isInManutenzione()) throw new ManutenzioneOrServizioException("già in manutenzione", true);
+        veicoloPubblico.setInManutenzione(true);
+        Manutenzione manutenzione = new Manutenzione(tipoManutenzione, veicoloPubblico);
+        EntityTransaction transaction = entityManager.getTransaction();
+        transaction.begin();
+        entityManager.persist(manutenzione);
+        transaction.commit();
+        System.out.println("Il veicolo " + manutenzione.getVeicoloPubblico().getTarga() + " è stato messo in manutenzione");
     }
 
     public void salvaManutenzione(Manutenzione manutenzione) {
@@ -31,20 +43,9 @@ public class ManutenzioneDao {
                 .getSingleResult();
     }
 
-    public void mettiInManutenzione(VeicoloPubblico veicoloPubblico, TipoManutenzione tipoManutenzione){
-        if(veicoloPubblico.isInServizio()) throw new ManutenzioneOrServizioException("in servizio", true);
-        if(veicoloPubblico.isInManutenzione()) throw new ManutenzioneOrServizioException("già in manutenzione", true);
-        veicoloPubblico.setInManutenzione(true);
-        Manutenzione manutenzione = new Manutenzione(tipoManutenzione, veicoloPubblico);
-        EntityTransaction transaction = entityManager.getTransaction();
-        transaction.begin();
-        entityManager.persist(manutenzione);
-        transaction.commit();
-        System.out.println("Il veicolo " + manutenzione.getVeicoloPubblico().getTarga() + " è stato messo in manutenzione");
-    }
-
-    public void terminaManutenzione(VeicoloPubblico veicoloPubblico){
-        if(veicoloPubblico.isInServizio() || !veicoloPubblico.isInManutenzione()) throw new ManutenzioneOrServizioException("in manutenzione", false);
+    public void terminaManutenzione(VeicoloPubblico veicoloPubblico) {
+        if (veicoloPubblico.isInServizio() || !veicoloPubblico.isInManutenzione())
+            throw new ManutenzioneOrServizioException("in manutenzione", false);
         veicoloPubblico.setInManutenzione(false);
         Optional<Manutenzione> ricerca = veicoloPubblico.getManutenzionList().stream().filter(manutenzione -> manutenzione.getDataFine() == null).findFirst();
         ricerca.ifPresent(manutenzione -> manutenzione.setDataFine(LocalDate.now()));
