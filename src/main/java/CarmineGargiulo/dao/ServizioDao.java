@@ -3,6 +3,8 @@ package CarmineGargiulo.dao;
 import CarmineGargiulo.entities.Servizio;
 import CarmineGargiulo.entities.Tratta;
 import CarmineGargiulo.entities.VeicoloPubblico;
+import CarmineGargiulo.exceptions.ManutenzioneOrServizioException;
+import CarmineGargiulo.exceptions.TrattaGiaPercorsaException;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.TypedQuery;
@@ -53,9 +55,9 @@ public class ServizioDao {
     }
 
     public void mettiInServizio(VeicoloPubblico veicoloPubblico, Tratta tratta){
-        if(veicoloPubblico.isInManutenzione()) throw new RuntimeException(); // TODO CREARE ECCEZIONE VEICOLO IN MANUTENZIONE
-        if(veicoloPubblico.isInServizio()) throw new RuntimeException(); // TODO CREARE ECCEZIONE VEICOLO GIA IN SERVIZIO
-        if(tratta.getServiziList().stream().anyMatch(servizio1 -> servizio1.getDataFine() == null)) throw new RuntimeException(); // TODO CREARE ECCEZIONE TRATTA GIA PERCORSA DA UN ALTRO VEICOLO
+        if(veicoloPubblico.isInManutenzione()) throw new ManutenzioneOrServizioException("in manutenzione", true);
+        if(veicoloPubblico.isInServizio()) throw new ManutenzioneOrServizioException ("già in servizio", true);
+        if(tratta.getServiziList().stream().anyMatch(servizio1 -> servizio1.getDataFine() == null)) throw new TrattaGiaPercorsaException();
         veicoloPubblico.setInServizio(true);
         Servizio servizio = new Servizio(veicoloPubblico, tratta);
         EntityTransaction transaction = entityManager.getTransaction();
@@ -66,8 +68,7 @@ public class ServizioDao {
     }
 
     public void mettiFuoriServizio(VeicoloPubblico veicoloPubblico){
-        if(veicoloPubblico.isInManutenzione()) throw new RuntimeException(); // TODO CREARE ECCEZIONE VEICOLO IN MANUTENZIONE
-        if(!veicoloPubblico.isInServizio()) throw new RuntimeException(); // TODO CREARE ECCEZIONE VEICOLO GIà FUORI SERVIZIO
+        if(veicoloPubblico.isInManutenzione() || !veicoloPubblico.isInServizio()) throw new ManutenzioneOrServizioException("in servizio", false);
         veicoloPubblico.setInServizio(false);
         Optional<Servizio> ricerca = veicoloPubblico.getServiziList().stream().filter(servizio -> servizio.getDataFine() == null).findFirst();
         ricerca.ifPresent(servizio -> servizio.setDataFine(LocalDate.now()));
