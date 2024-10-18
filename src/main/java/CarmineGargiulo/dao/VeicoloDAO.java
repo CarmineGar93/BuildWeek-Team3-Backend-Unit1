@@ -1,10 +1,6 @@
 package CarmineGargiulo.dao;
 
-import CarmineGargiulo.entities.Biglietto;
-import CarmineGargiulo.entities.Tessera;
-import CarmineGargiulo.entities.TitoloViaggio;
 import CarmineGargiulo.entities.VeicoloPubblico;
-import CarmineGargiulo.exceptions.EmptyListException;
 import CarmineGargiulo.exceptions.NotFoundException;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
