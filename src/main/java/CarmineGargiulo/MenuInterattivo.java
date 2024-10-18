@@ -114,8 +114,13 @@ public class MenuInterattivo {
             if (scelta < 0 || scelta > 5) System.out.println("Devi inserire un numero tra 1 e 5");
             else break;
         }
-        TipoManutenzione tipo = tipiList.get(scelta);
-        manutenzioneDao.mettiInManutenzione(veicoloPubblico, tipo);
+        TipoManutenzione tipo = tipiList.get(scelta - 1);
+        try {
+            manutenzioneDao.mettiInManutenzione(veicoloPubblico, tipo);
+        } catch (ManutenzioneOrServizioException e){
+            System.out.println(e.getMessage());
+        }
+
     }
 
     private void terminaManutenzione(){
@@ -495,10 +500,14 @@ public class MenuInterattivo {
         if (scelta > 0 && scelta <= puntiVendita.size()) {
             PuntoVendita puntoVendita = puntiVendita.get(scelta - 1);
             System.out.println("\nPunto Vendita: " + puntoVendita.getIndirizzo());
-            System.out.println("Biglietti venduti: " +
-                    titoloViaggioDao.getAllTitoliViaggioPerPuntoVendita(puntoVendita).stream().filter(t -> t instanceof Biglietto).count());
-            System.out.println("Abbonamenti venduti: " +
-                    titoloViaggioDao.getAllTitoliViaggioPerPuntoVendita(puntoVendita).stream().filter(t -> t instanceof Abbonamento).count());
+            try {
+                System.out.println("Biglietti venduti: " +
+                        titoloViaggioDao.getAllTitoliViaggioPerPuntoVendita(puntoVendita).stream().filter(t -> t instanceof Biglietto).count());
+                System.out.println("Abbonamenti venduti: " +
+                        titoloViaggioDao.getAllTitoliViaggioPerPuntoVendita(puntoVendita).stream().filter(t -> t instanceof Abbonamento).count());
+            }catch (EmptyListException e) {
+                System.out.println("Non ci sono titoli di viaggio venduti per questo punto vendita");
+            }
         } else {
             System.out.println("\nScelta non valida.");
         }
