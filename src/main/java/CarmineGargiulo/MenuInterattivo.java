@@ -3,10 +3,7 @@ package CarmineGargiulo;
 import CarmineGargiulo.dao.*;
 import CarmineGargiulo.entities.*;
 import CarmineGargiulo.enums.TipoAbbonamento;
-import CarmineGargiulo.exceptions.AbbonamentoDateException;
-import CarmineGargiulo.exceptions.BigliettoGiaConvalidatoException;
-import CarmineGargiulo.exceptions.NotFoundException;
-import CarmineGargiulo.exceptions.TesseraScadutaException;
+import CarmineGargiulo.exceptions.*;
 import jakarta.persistence.EntityManager;
 
 import java.time.LocalDate;
@@ -210,7 +207,12 @@ public class MenuInterattivo {
     private void compraBiglietto(){
         PuntoVendita puntoVendita = selezionaPuntoVendita();
         Biglietto biglietto = new Biglietto(2.5, LocalDate.now(), puntoVendita);
-        titoloViaggioDao.salvaTitoloViaggio(biglietto);
+        try {
+            titoloViaggioDao.salvaTitoloViaggio(biglietto);
+        } catch (DistributoreFuoriServizioException e){
+            System.out.println(e.getMessage());
+        }
+
     }
 
     private void compraAbbonamento(Tessera tessera){
@@ -263,7 +265,7 @@ public class MenuInterattivo {
             try {
                 titoloViaggioDao.salvaTitoloViaggio(abbonamento);
                 System.out.println("Abbonamento '" + tipoAbbonamento + "' acquistato con successo presso " + puntoVendita.getIndirizzo() + "!");
-            } catch (AbbonamentoDateException | TesseraScadutaException e) {
+            } catch (AbbonamentoDateException | TesseraScadutaException | DistributoreFuoriServizioException e) {
                 System.out.println(e.getMessage());
             }
         } else {

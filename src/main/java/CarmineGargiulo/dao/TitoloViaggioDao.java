@@ -20,6 +20,10 @@ public class TitoloViaggioDao {
     }
 
     public void salvaTitoloViaggio(TitoloViaggio titoloViaggio) {
+        PuntoVendita puntoVendita = titoloViaggio.getPuntoVendita();
+        if(puntoVendita instanceof Distributore){
+            if (!((Distributore) puntoVendita).isAttivo()) throw new DistributoreFuoriServizioException();
+        }
         if (titoloViaggio instanceof Abbonamento) {
             Abbonamento abbonamento = (Abbonamento) titoloViaggio;
             if (abbonamento.getTessera().getDataScadenza().isBefore(LocalDate.now())) {
@@ -37,7 +41,7 @@ public class TitoloViaggioDao {
         entityManager.persist(titoloViaggio);
         transaction.commit();
 
-        System.out.println((titoloViaggio instanceof Biglietto ? "Biglietto ": "Abbonamento ") + titoloViaggio.getTitoloViaggio_id() + " comprato correttamente");
+        System.out.println((titoloViaggio instanceof Biglietto ? "Biglietto ": "Abbonamento ") + titoloViaggio.getTitoloViaggio_id() + " comprato correttamente presso " + titoloViaggio.getPuntoVendita().getIndirizzo());
     }
 
     public List<TitoloViaggio> ottieniListaTitoliViaggio() {

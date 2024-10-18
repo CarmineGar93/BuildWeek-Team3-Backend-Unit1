@@ -29,7 +29,8 @@ public class Application {
         ManutenzioneDao manutenzioneDao = new ManutenzioneDao(em);
         ServizioDao servizioDao = new ServizioDao(em);
         MenuInterattivo menuInterattivo = new MenuInterattivo(em);
-        menuInterattivo.avviaMenu();
+        if(!puntoVenditaDAO.ottieniListaPuntiVendita().isEmpty()) menuInterattivo.avviaMenu();
+
 
         inizializzaDb(puntoVenditaDAO, tratteDao, utenteDao, tessereDAO, titoloViaggioDao, veicoloDAO);
 
@@ -37,35 +38,6 @@ public class Application {
 
         em.close();
         emf.close();
-    }
-
-
-    private static void visualizzaVenditePuntiVendita(PuntoVenditaDAO puntoVenditaDAO, Scanner scanner, TitoloViaggioDao titoloViaggioDao) {
-        List<PuntoVendita> puntiVendita = puntoVenditaDAO.ottieniListaPuntiVendita();
-
-        if (puntiVendita.isEmpty()) {
-            System.out.println("\nNessun punto vendita disponibile.");
-            return;
-        }
-
-        System.out.println("\nSeleziona un punto vendita dall'elenco:");
-        for (int i = 0; i < puntiVendita.size(); i++) {
-            System.out.println((i + 1) + ". " + puntiVendita.get(i).getIndirizzo());
-        }
-
-        System.out.println("\nScegli il numero del punto vendita:");
-        int scelta = scanner.nextInt();
-        scanner.nextLine();
-
-
-        if (scelta > 0 && scelta <= puntiVendita.size()) {
-            PuntoVendita puntoVendita = puntiVendita.get(scelta - 1);
-            System.out.println("\nPunto Vendita: " + puntoVendita.getIndirizzo());
-            System.out.println("Biglietti venduti: " + titoloViaggioDao.getAllTitoliViaggioPerPuntoVendita(puntoVendita).stream().filter(titoloViaggio -> titoloViaggio instanceof Biglietto).toList().size());
-            System.out.println("Abbonamenti venduti: " + titoloViaggioDao.getAllTitoliViaggioPerPuntoVendita(puntoVendita).stream().filter(titoloViaggio -> titoloViaggio instanceof Abbonamento).toList().size());
-        } else {
-            System.out.println("\nScelta non valida.");
-        }
     }
 
     public static void inizializzaDb(
@@ -245,12 +217,6 @@ public class Application {
                     servizioDao.salvaServizio(servizio);
                 }
                 serviziAggiornati = true;
-            }
-
-            if (!manutenzioniAggiornate && !serviziAggiornati) {
-                //System.out.println("Lo storico per il veicolo con targa " + veicolo.getTarga() + " è già stato salvato.");
-            } else {
-                System.out.println("Le nuove manutenzioni e servizi per il veicolo con targa " + veicolo.getTarga() + " sono stati salvati.");
             }
 
             index++;
