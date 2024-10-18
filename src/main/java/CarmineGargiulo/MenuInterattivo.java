@@ -357,6 +357,7 @@ public class MenuInterattivo {
             System.out.println("Non hai acquistato questo abbonamento.");
         }
     }
+
     private void mostraMezziInManutenzione() {
         List<VeicoloPubblico> veicoli = veicoloDAO.ottieniListaVeicoli();
 
@@ -492,44 +493,6 @@ public class MenuInterattivo {
             System.out.println("Scelta non valida.");
         }
     }
-
-    private void gestisciUtente() {
-        boolean sceltaValida = false;
-
-        while (!sceltaValida) {
-            System.out.println("Cosa vuoi fare?");
-            System.out.println("1. Compra biglietto");
-            System.out.println("2. Compra abbonamento");
-            System.out.println("3. Scegli tratta");
-
-            try {
-                int scelta = scanner.nextInt();
-                scanner.nextLine();
-
-                switch (scelta) {
-                    case 1:
-                        compraBiglietto();
-                        sceltaValida = true;
-                        break;
-                    case 2:
-                        compraAbbonamento();
-                        sceltaValida = true;
-                        break;
-                    case 3:
-                        scegliTratta();
-                        sceltaValida = true;
-                        break;
-                    default:
-                        System.out.println("Scelta non valida.");
-                }
-            } catch (Exception e) {
-                System.out.println("Inserisci un numero valido.");
-                scanner.nextLine();
-            }
-        }
-    }
-
-
 
     private int verifyInput(){
         int number;
