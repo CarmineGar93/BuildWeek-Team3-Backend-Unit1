@@ -14,8 +14,10 @@ public abstract class PuntoVendita {
     @GeneratedValue
     @Column(name = "punto_vendita_id")
     protected UUID puntoVenditaId;
+
     @Column(nullable = false)
     protected String indirizzo;
+
     @OneToMany(mappedBy = "puntoVendita")
     protected List<TitoloViaggio> titoliViaggioList;
 
@@ -24,6 +26,7 @@ public abstract class PuntoVendita {
 
     public PuntoVendita(String indirizzo) {
         this.indirizzo = indirizzo;
+
     }
 
     public UUID getPuntoVenditaId() {
@@ -46,5 +49,6 @@ public abstract class PuntoVendita {
     public String toString() {
         return "puntoVendita_id: " + puntoVenditaId +
                 ", indirizzo: " + indirizzo;
+
     }
 }
