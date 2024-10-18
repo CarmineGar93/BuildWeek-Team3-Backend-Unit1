@@ -33,12 +33,12 @@ public class Application {
         ManutenzioneDao manutenzioneDao = new ManutenzioneDao(em);
         ServizioDao servizioDao = new ServizioDao(em);
         MenuInterattivo menuInterattivo = new MenuInterattivo(em);
+
         inizializzaDb(puntoVenditaDAO, tratteDao, utenteDao, tessereDAO, titoloViaggioDao, veicoloDAO, manutenzioneDao, servizioDao, em);
-        if(!puntoVenditaDAO.ottieniListaPuntiVendita().isEmpty()) menuInterattivo.avviaMenu();
 
-
-
-
+        if (!puntoVenditaDAO.ottieniListaPuntiVendita().isEmpty()) {
+            menuInterattivo.avviaMenu();
+        }
 
         em.close();
         emf.close();
@@ -55,112 +55,116 @@ public class Application {
             ServizioDao servizioDao,
             EntityManager em) {
 
-            if (puntoVenditaDAO.ottieniListaPuntiVendita().isEmpty()) {
-                for (int i = 0; i < 10; i++) {
-                    boolean random = faker.random().nextBoolean();
-                    if (random) {
-                        RivenditoreAutorizzato rivenditoreAutorizzato = new RivenditoreAutorizzato(
-                                faker.address().streetName(), faker.company().name());
-                        puntoVenditaDAO.salvaPuntoVendita(rivenditoreAutorizzato);
-                    } else {
-                        Distributore distributore = new Distributore(
-                                faker.address().streetName(), faker.random().nextBoolean());
-                        puntoVenditaDAO.salvaPuntoVendita(distributore);
-                    }
+        if (puntoVenditaDAO.ottieniListaPuntiVendita().isEmpty()) {
+            for (int i = 0; i < 10; i++) {
+                boolean random = faker.random().nextBoolean();
+                if (random) {
+                    RivenditoreAutorizzato rivenditoreAutorizzato = new RivenditoreAutorizzato(
+                            faker.address().streetName(), faker.company().name());
+                    puntoVenditaDAO.salvaPuntoVendita(rivenditoreAutorizzato);
+                } else {
+                    Distributore distributore = new Distributore(
+                            faker.address().streetName(), faker.random().nextBoolean());
+                    puntoVenditaDAO.salvaPuntoVendita(distributore);
                 }
             }
+        }
 
-            List<Tratta> tratteEsistenti = tratteDao.ottieniListaTratte();
-            if (tratteEsistenti.size() < 6) {
-                int tratteDaAggiungere = 6 - tratteEsistenti.size();
-                for (int i = 0; i < tratteDaAggiungere; i++) {
-                    Tratta tratta = new Tratta(
-                            "Linea " + (tratteEsistenti.size() + i + 1),
-                            faker.address().cityName(),
-                            faker.address().cityName(),
-                            faker.number().numberBetween(20, 60)
+        List<Tratta> tratteEsistenti = tratteDao.ottieniListaTratte();
+        if (tratteEsistenti.size() < 6) {
+            int tratteDaAggiungere = 6 - tratteEsistenti.size();
+            for (int i = 0; i < tratteDaAggiungere; i++) {
+                Tratta tratta = new Tratta(
+                        "Linea " + (tratteEsistenti.size() + i + 1),
+                        faker.address().cityName(),
+                        faker.address().cityName(),
+                        faker.number().numberBetween(20, 60)
+                );
+                tratteDao.saveTratta(tratta);
+            }
+        }
+
+        if (utenteDao.ottieniListaUtenti().isEmpty()) {
+            for (int i = 0; i < 5; i++) {
+                Utente utente = new Utente(
+                        faker.name().fullName(),
+                        faker.number().numberBetween(1950, 2006)
+                );
+                utenteDao.salvaUtenteDao(utente);
+            }
+        }
+
+        if (tessereDAO.ottieniListaTessere().isEmpty()) {
+            List<Utente> utentiList = utenteDao.ottieniListaUtenti();
+            for (Utente utente : utentiList) {
+                Tessera tessera = new Tessera(LocalDate.now(), utente);
+                tessereDAO.salvaTessera(tessera);
+            }
+        }
+
+        if (titoloViaggioDao.ottieniListaTitoliViaggio().isEmpty()) {
+            List<PuntoVendita> puntoVenditaList = puntoVenditaDAO.ottieniListaPuntiVendita();
+            List<Tessera> tesseraList = tessereDAO.ottieniListaTessere();
+            List<TipoAbbonamento> tipiList = Arrays.asList(TipoAbbonamento.values());
+
+            for (int i = 0; i < 30; i++) {
+                boolean random = faker.random().nextBoolean();
+                PuntoVendita puntoRandom;
+                while (true) {
+                    puntoRandom = puntoVenditaList.get(faker.random().nextInt(0, puntoVenditaList.size() - 1));
+                    if (puntoRandom instanceof RivenditoreAutorizzato) break;
+                    else if (((Distributore) puntoRandom).isAttivo()) break;
+                }
+
+                if (random) {
+                    Biglietto biglietto = new Biglietto(
+                            Double.parseDouble(faker.commerce().price().replace(",", ".")),
+                            LocalDate.of(faker.random().nextInt(2020, 2024),
+                                    faker.random().nextInt(1, 12),
+                                    faker.random().nextInt(1, 27)),
+                            puntoRandom
                     );
-                    tratteDao.saveTratta(tratta);
-                }
-            }
-
-            if (utenteDao.ottieniListaUtenti().isEmpty()) {
-                for (int i = 0; i < 5; i++) {
-                    Utente utente = new Utente(
-                            faker.name().fullName(),
-                            faker.number().numberBetween(1950, 2006)
-                    );
-                    utenteDao.salvaUtenteDao(utente);
-                }
-            }
-
-            if (tessereDAO.ottieniListaTessere().isEmpty()) {
-                List<Utente> utentiList = utenteDao.ottieniListaUtenti();
-                for (Utente utente : utentiList) {
-                    Tessera tessera = new Tessera(LocalDate.now(), utente);
-                    tessereDAO.salvaTessera(tessera);
-                }
-            }
-
-            if (titoloViaggioDao.ottieniListaTitoliViaggio().isEmpty()) {
-                List<PuntoVendita> puntoVenditaList = puntoVenditaDAO.ottieniListaPuntiVendita();
-                List<Tessera> tesseraList = tessereDAO.ottieniListaTessere();
-                List<TipoAbbonamento> tipiList = Arrays.asList(TipoAbbonamento.values());
-
-                for (int i = 0; i < 30; i++) {
-                    boolean random = faker.random().nextBoolean();
-                    PuntoVendita puntoRandom;
-                    while (true) {
-                        puntoRandom = puntoVenditaList.get(faker.random().nextInt(0, puntoVenditaList.size() - 1));
-                        if (puntoRandom instanceof RivenditoreAutorizzato) break;
-                        else if (((Distributore) puntoRandom).isAttivo()) break;
-                    }
-
-                    if (random) {
-                        Biglietto biglietto = new Biglietto(
-                                Double.parseDouble(faker.commerce().price().replace(",", ".")),
-                                LocalDate.of(faker.random().nextInt(2020, 2024),
-                                        faker.random().nextInt(1, 12),
-                                        faker.random().nextInt(1, 27)),
-                                puntoRandom
-                        );
+                    try {
                         titoloViaggioDao.salvaTitoloViaggio(biglietto);
-                    } else {
-                        Abbonamento abbonamento = new Abbonamento(
-                                Double.parseDouble(faker.commerce().price().replace(",", ".")),
-                                LocalDate.of(faker.random().nextInt(2020, 2024),
-                                        faker.random().nextInt(1, 12),
-                                        faker.random().nextInt(1, 27)),
-                                puntoRandom,
-                                LocalDate.now(),
-                                tipiList.get(faker.random().nextInt(0, tipiList.size()-1)),
-                                tesseraList.get(faker.random().nextInt(0, tesseraList.size()-1))
-                        );
-                        try {
-                            titoloViaggioDao.salvaTitoloViaggio(abbonamento);
-                        } catch (Exception e) {
-                            System.out.println("Errore nell'acquisto dell'abbonamento: " + e.getMessage());
-                        }
+                    } catch (DistributoreFuoriServizioException e) {
+
+                    }
+                } else {
+                    Abbonamento abbonamento = new Abbonamento(
+                            Double.parseDouble(faker.commerce().price().replace(",", ".")),
+                            LocalDate.of(faker.random().nextInt(2020, 2024),
+                                    faker.random().nextInt(1, 12),
+                                    faker.random().nextInt(1, 27)),
+                            puntoRandom,
+                            LocalDate.now(),
+                            tipiList.get(faker.random().nextInt(0, tipiList.size() - 1)),
+                            tesseraList.get(faker.random().nextInt(0, tesseraList.size() - 1))
+                    );
+                    try {
+                        titoloViaggioDao.salvaTitoloViaggio(abbonamento);
+                    } catch (Exception e) {
+
                     }
                 }
             }
+        }
 
-            if (veicoloDAO.ottieniListaVeicoli().isEmpty()) {
-                for (int i = 0; i < 6; i++) {
-                    VeicoloPubblico veicoloPubblico = new VeicoloPubblico(
-                            faker.bothify("??###??").toUpperCase(),
-                            TipoVeicolo.TRAM
-                    );
-                    veicoloDAO.salvaVeicolo(veicoloPubblico);
-                }
-                for (int i = 0; i < 6; i++) {
-                    VeicoloPubblico veicoloPubblico = new VeicoloPubblico(
-                            faker.bothify("??###??").toUpperCase(),
-                            TipoVeicolo.AUTOBUS
-                    );
-                    veicoloDAO.salvaVeicolo(veicoloPubblico);
-                }
+        if (veicoloDAO.ottieniListaVeicoli().isEmpty()) {
+            for (int i = 0; i < 6; i++) {
+                VeicoloPubblico veicoloPubblico = new VeicoloPubblico(
+                        faker.bothify("??###??").toUpperCase(),
+                        TipoVeicolo.TRAM
+                );
+                veicoloDAO.salvaVeicolo(veicoloPubblico);
             }
+            for (int i = 0; i < 6; i++) {
+                VeicoloPubblico veicoloPubblico = new VeicoloPubblico(
+                        faker.bothify("??###??").toUpperCase(),
+                        TipoVeicolo.AUTOBUS
+                );
+                veicoloDAO.salvaVeicolo(veicoloPubblico);
+            }
+        }
 
         if (servizioDao.controlloServiziAttivi().isEmpty()) {
             List<VeicoloPubblico> veicoli = veicoloDAO.ottieniListaVeicoli();
@@ -170,36 +174,35 @@ public class Application {
             }
         }
 
-            if (!bigliettiObliteratiInizializzati) {
-                List<VeicoloPubblico> veicoli = veicoloDAO.ottieniListaVeicoli();
-                if (!veicoli.isEmpty()) {
-                    List<PuntoVendita> puntiVendita = puntoVenditaDAO.ottieniListaPuntiVendita();
-                    for (int i = 0; i < 10; i++) {
-                        PuntoVendita puntoVendita = puntiVendita.get(faker.random().nextInt(0, puntiVendita.size() - 1));
-                        VeicoloPubblico veicolo2 = veicoli.get(faker.random().nextInt(0, veicoli.size() - 1));
+        if (!bigliettiObliteratiInizializzati) {
+            List<VeicoloPubblico> veicoli = veicoloDAO.ottieniListaVeicoli();
+            if (!veicoli.isEmpty()) {
+                List<PuntoVendita> puntiVendita = puntoVenditaDAO.ottieniListaPuntiVendita();
+                for (int i = 0; i < 10; i++) {
+                    PuntoVendita puntoVendita = puntiVendita.get(faker.random().nextInt(0, puntiVendita.size() - 1));
+                    VeicoloPubblico veicolo2 = veicoli.get(faker.random().nextInt(0, veicoli.size() - 1));
 
-                        Biglietto biglietto = new Biglietto(
-                                Double.parseDouble(faker.commerce().price().replace(",", ".")),
-                                LocalDate.now().minusDays(faker.random().nextInt(0, 150)),
-                                puntoVendita
-                        );
+                    Biglietto biglietto = new Biglietto(
+                            Double.parseDouble(faker.commerce().price().replace(",", ".")),
+                            LocalDate.now().minusDays(faker.random().nextInt(0, 150)),
+                            puntoVendita
+                    );
 
-                        try {
-                            titoloViaggioDao.salvaTitoloViaggio(biglietto);
-                        } catch (DistributoreFuoriServizioException e) {
-                            System.out.println(e.getMessage());
-                        }
+                    try {
+                        titoloViaggioDao.salvaTitoloViaggio(biglietto);
+                    } catch (DistributoreFuoriServizioException e) {
 
+                    }
 
-                        try {
-                            titoloViaggioDao.obliteraBiglietto(biglietto.getTitoloViaggio_id().toString(), veicolo2);
-                        } catch (Exception e) {
-                            System.out.println("Errore durante l'obliterazione del biglietto: " + e.getMessage());
-                        }
+                    try {
+                        titoloViaggioDao.obliteraBiglietto(biglietto.getTitoloViaggio_id().toString(), veicolo2);
+                    } catch (Exception e) {
+
                     }
                 }
-                bigliettiObliteratiInizializzati = true;
             }
+            bigliettiObliteratiInizializzati = true;
+        }
     }
 
     public static void generaStoricoVeicoli(
@@ -225,9 +228,6 @@ public class Application {
             long manutenzioniPresenti = manutenzioneDao.contaManutenzioniPerVeicolo(veicolo);
             long serviziPresenti = servizioDao.contaServiziPerVeicolo(veicolo);
 
-            boolean manutenzioniAggiornate = false;
-            boolean serviziAggiornati = false;
-
             if (manutenzioniPresenti < numeroManutenzioni[index]) {
                 int manutenzioniDaCreare = numeroManutenzioni[index] - (int) manutenzioniPresenti;
                 for (int i = 0; i < manutenzioniDaCreare; i++) {
@@ -239,9 +239,7 @@ public class Application {
                     );
                     manutenzioneDao.salvaManutenzione(manutenzione);
                 }
-                manutenzioniAggiornate = true;
             }
-
 
             if (serviziPresenti < numeroServizi[index]) {
                 int serviziDaCreare = numeroServizi[index] - (int) serviziPresenti;
@@ -255,13 +253,10 @@ public class Application {
                     );
                     servizioDao.salvaServizio(servizio);
                 }
-                serviziAggiornati = true;
             }
 
             index++;
         }
-
-
     }
 
     public static boolean DatabasePopolato(TitoloViaggioDao titoloViaggioDao, VeicoloDAO veicoloDAO) {

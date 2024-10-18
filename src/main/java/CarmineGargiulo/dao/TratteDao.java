@@ -1,6 +1,5 @@
 package CarmineGargiulo.dao;
 
-import CarmineGargiulo.entities.PuntoVendita;
 import CarmineGargiulo.entities.Tratta;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
@@ -16,7 +15,7 @@ public class TratteDao {
         this.entityManager = entityManager;
     }
 
-    public void saveTratta (Tratta tratta) {
+    public void saveTratta(Tratta tratta) {
         EntityTransaction transaction = entityManager.getTransaction();
         transaction.begin();
         entityManager.persist(tratta);
@@ -31,14 +30,11 @@ public class TratteDao {
         return found;
     }
 
-    public List<Tratta> ottieniListaTratte(){
+    public List<Tratta> ottieniListaTratte() {
         TypedQuery<Tratta> query = entityManager.createNamedQuery("getAllTratte", Tratta.class);
         return query.getResultList();
     }
 
-   /* public List<Tratta> ottieniTratteScoperte(){
-        *//*TypedQuery<Tratta> query = entityManager.createQuery("SELECT t FROM Tratta t JOIN Servizio s WHERE s.dataFine IS NULL");*//*
-    }*/
 
 }
 

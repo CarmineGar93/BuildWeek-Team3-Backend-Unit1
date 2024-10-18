@@ -3,6 +3,7 @@ package CarmineGargiulo;
 import CarmineGargiulo.dao.*;
 import CarmineGargiulo.entities.*;
 import CarmineGargiulo.enums.TipoAbbonamento;
+import CarmineGargiulo.enums.TipoManutenzione;
 import CarmineGargiulo.exceptions.*;
 import jakarta.persistence.EntityManager;
 
@@ -22,6 +23,7 @@ public class MenuInterattivo {
     private final VeicoloDAO veicoloDAO;
     private final ManutenzioneDao manutenzioneDao;
     private final ServizioDao servizioDao;
+
     public MenuInterattivo(EntityManager entityManager) {
         this.em = entityManager;
         this.puntoVenditaDAO = new PuntoVenditaDAO(entityManager);
@@ -33,7 +35,33 @@ public class MenuInterattivo {
         this.manutenzioneDao = new ManutenzioneDao(entityManager);
         this.servizioDao = new ServizioDao(entityManager);
     }
-    private void menuAmministratore(){
+
+    public void avviaMenu() {
+        System.out.println("Benvenuto nell'azienda di trasporti numero uno al mondo");
+        outerLoop:
+        while (true) {
+            System.out.println("Vuoi accedere al menu utente o amministratore?");
+            System.out.println("1) Utente ");
+            System.out.println("2) Amministratore");
+            System.out.println("0) Esci");
+            int scelta;
+            while (true) {
+                scelta = verifyInput();
+                if (scelta < 0 || scelta > 2) System.out.println("Devi inserire un numero tra zero e 2");
+                else break;
+            }
+            switch (scelta) {
+                case 0 -> {
+                    System.out.println("A presto");
+                    break outerLoop;
+                }
+                case 1 -> menuUtente();
+                case 2 -> menuAmministratore();
+            }
+        }
+    }
+
+    private void menuAmministratore() {
         while (true) {
             System.out.println("Che cosa vuoi fare?");
             System.out.println("1) Controllo biglietti/abbonamenti venduti");
@@ -45,7 +73,7 @@ public class MenuInterattivo {
             System.out.println("0) Esci");
 
             int scelta = scanner.nextInt();
-            scanner.nextLine(); // Consuma il newline
+            scanner.nextLine();
 
             switch (scelta) {
                 case 1:
@@ -61,10 +89,10 @@ public class MenuInterattivo {
                     // Codice per controllare la lista delle linee scoperte
                     break;
                 case 5:
-                    // Codice per assegnare un veicolo a una linea
+                    assegnaVeicoloALinea();
                     break;
                 case 6:
-                    // Codice per gestione veicoli in servizio o manutenzione
+                    gestisciVeicoloServizioManutenzione();
                     break;
                 case 0:
                     System.out.println("\nUscita dal sistema amministratore.");
@@ -72,6 +100,132 @@ public class MenuInterattivo {
                 default:
                     System.out.println("Scelta non valida.");
             }
+        }
+    }
+
+    private void assegnaVeicoloALinea() {
+        List<VeicoloPubblico> veicoli = veicoloDAO.ottieniListaVeicoli();
+        List<Tratta> tratte = tratteDao.ottieniListaTratte();
+
+        System.out.println("Seleziona un veicolo non ancora in servizio:");
+        for (int i = 0; i < veicoli.size(); i++) {
+            if (!veicoli.get(i).isInServizio()) {
+                System.out.println((i + 1) + ") " + veicoli.get(i).getTarga());
+            }
+        }
+
+        int sceltaVeicolo = verifyInput();
+        if (sceltaVeicolo <= 0 || sceltaVeicolo > veicoli.size()) {
+            System.out.println("Scelta non valida.");
+            return;
+        }
+
+        VeicoloPubblico veicoloSelezionato = veicoli.get(sceltaVeicolo - 1);
+        if (veicoloSelezionato.isInServizio()) {
+            System.out.println("Il veicolo è già in servizio.");
+            return;
+        }
+
+        System.out.println("Seleziona una tratta per il veicolo:");
+        for (int i = 0; i < tratte.size(); i++) {
+            System.out.println((i + 1) + ") " + tratte.get(i).getNomeTratta());
+        }
+
+        int sceltaTratta = verifyInput();
+        if (sceltaTratta <= 0 || sceltaTratta > tratte.size()) {
+            System.out.println("Scelta non valida.");
+            return;
+        }
+
+        Tratta trattaSelezionata = tratte.get(sceltaTratta - 1);
+        try {
+            servizioDao.mettiInServizio(veicoloSelezionato, trattaSelezionata);
+            System.out.println("Veicolo assegnato alla tratta: " + trattaSelezionata.getNomeTratta());
+        } catch (Exception e) {
+            System.out.println("Errore durante l'assegnazione del veicolo: " + e.getMessage());
+        }
+    }
+
+    private void gestisciVeicoloServizioManutenzione() {
+        List<VeicoloPubblico> veicoli = veicoloDAO.ottieniListaVeicoli();
+
+        System.out.println("Seleziona un veicolo:");
+        for (int i = 0; i < veicoli.size(); i++) {
+            System.out.println((i + 1) + ") " + veicoli.get(i).getTarga());
+        }
+
+        int sceltaVeicolo = verifyInput();
+        if (sceltaVeicolo <= 0 || sceltaVeicolo > veicoli.size()) {
+            System.out.println("Scelta non valida.");
+            return;
+        }
+
+        VeicoloPubblico veicoloSelezionato = veicoli.get(sceltaVeicolo - 1);
+
+        System.out.println("Cosa vuoi fare con il veicolo " + veicoloSelezionato.getTarga() + "?");
+        System.out.println("1) Metti in servizio");
+        System.out.println("2) Metti in manutenzione");
+
+        int scelta = verifyInput();
+        switch (scelta) {
+            case 1:
+                if (veicoloSelezionato.isInServizio()) {
+                    System.out.println("\nIl veicolo è già in servizio.");
+                } else {
+                    System.out.println("\nSeleziona la tratta per il servizio:");
+                    List<Tratta> tratte = tratteDao.ottieniListaTratte();
+                    for (int i = 0; i < tratte.size(); i++) {
+                        System.out.println((i + 1) + ") " + tratte.get(i).getNomeTratta());
+                    }
+
+                    int sceltaTratta = verifyInput();
+                    if (sceltaTratta <= 0 || sceltaTratta > tratte.size()) {
+                        System.out.println("Scelta non valida.");
+                        return;
+                    }
+
+                    Tratta trattaSelezionata = tratte.get(sceltaTratta - 1);
+                    try {
+                        servizioDao.mettiInServizio(veicoloSelezionato, trattaSelezionata);
+                        System.out.println("Il veicolo è ora in servizio.");
+                    } catch (Exception e) {
+                        System.out.println("Errore durante l'operazione: " + e.getMessage());
+                    }
+                }
+                break;
+            case 2:
+                if (veicoloSelezionato.isInManutenzione()) {
+                    System.out.println("\nIl veicolo è già in manutenzione.");
+                } else {
+                    System.out.println("\nSeleziona il tipo di manutenzione:");
+                    System.out.println("1) REVISIONE");
+                    System.out.println("2) CONTROLLO FRENI");
+                    System.out.println("3) CONTROLLO MOTORE");
+                    System.out.println("4) CONTROLLO FILTRI");
+                    System.out.println("5) CONTROLLO CENTRALINA");
+                    int sceltaManutenzione = verifyInput();
+                    TipoManutenzione tipoManutenzione;
+                    switch (sceltaManutenzione) {
+                        case 1 -> tipoManutenzione = TipoManutenzione.REVISIONE;
+                        case 2 -> tipoManutenzione = TipoManutenzione.CONTROLLO_FRENI;
+                        case 3 -> tipoManutenzione = TipoManutenzione.CONTROLLO_MOTORE;
+                        case 4 -> tipoManutenzione = TipoManutenzione.CONTROLLO_FILTRI;
+                        case 5 -> tipoManutenzione = TipoManutenzione.CONTROLLO_CENTRALINA;
+                        default -> {
+                            System.out.println("Scelta non valida.");
+                            return;
+                        }
+                    }
+                    try {
+                        manutenzioneDao.mettiInManutenzione(veicoloSelezionato, tipoManutenzione);
+                        System.out.println("\nIl veicolo è ora in manutenzione.");
+                    } catch (Exception e) {
+                        System.out.println("\nErrore durante l'operazione: " + e.getMessage());
+                    }
+                }
+                break;
+            default:
+                System.out.println("Scelta non valida.");
         }
     }
 
@@ -84,7 +238,7 @@ public class MenuInterattivo {
             System.out.println("0) Torna al menu principale");
 
             int scelta = scanner.nextInt();
-            scanner.nextLine(); // Consuma il newline
+            scanner.nextLine();
 
             switch (scelta) {
                 case 1:
@@ -123,78 +277,63 @@ public class MenuInterattivo {
         }
     }
 
-    private PuntoVendita selezionaPuntoVendita(){
-        List<PuntoVendita> puntiVendita = puntoVenditaDAO.ottieniListaPuntiVendita();
-        if (puntiVendita.isEmpty()) {
-            System.out.println("Nessun punto vendita disponibile");
-        }
-        System.out.println("Seleziona un punto vendita dall'elenco:");
-        for (int i = 0; i < puntiVendita.size(); i++) {
-            System.out.println((i + 1) + ") " + puntiVendita.get(i).getIndirizzo());
-        }
-        System.out.println("Scegli il numero del punto vendita:");
-        int scelta;
-        while (true){
-            scelta = verifyInput();
-            if (scelta <= 0 || scelta > puntiVendita.size()) System.out.println("Devi inserire un numero tra 1 e " + (puntiVendita.size()));
-            else break;
-        }
-        PuntoVendita puntoVendita = puntiVendita.get(scelta - 1);
-        System.out.println("Hai scelto il punto vendita: " + puntoVendita.getIndirizzo());
-        return puntoVendita;
-    }
+    private void mostraMezziInManutenzione() {
+        List<VeicoloPubblico> veicoli = veicoloDAO.ottieniListaVeicoli();
 
-    public void avviaMenu(){
-        System.out.println("Benvenuto nell'azienda di trasporti numero uno al mondo");
-        outerLoop: while(true) {
-            System.out.println("Vuoi accedere al menu utente o amministratore?");
-            System.out.println("1) Utente ");
-            System.out.println("2) Amministratore");
-            System.out.println("0) Esci");
-            int scelta;
-            while (true){
-                scelta = verifyInput();
-                if (scelta < 0 || scelta > 2) System.out.println("Devi inserire un numero tra zero e 2");
-                else break;
-            }
-            switch (scelta){
-                case 0 -> {
-                    System.out.println("A presto");
-                    break outerLoop;
+        System.out.println("\nVeicoli attualmente in manutenzione:");
+        for (VeicoloPubblico veicolo : veicoli) {
+            if (veicolo.isInManutenzione()) {
+                Optional<Manutenzione> manutenzioneAttiva = veicolo.getManutenzionList().stream()
+                        .filter(manutenzione -> manutenzione.getDataFine() == null)
+                        .findFirst();
+
+                if (manutenzioneAttiva.isPresent()) {
+                    System.out.println("\nVeicolo: " + veicolo.getTarga() + " - Tipo Manutenzione: " + manutenzioneAttiva.get().getTipoManutenzione());
+                } else {
+                    System.out.println("\nVeicolo: " + veicolo.getTarga() + " - Manutenzione attiva non trovata.");
                 }
-                case 1 -> menuUtente();
-                case 2 -> menuAmministratore();
             }
         }
-
     }
 
-    private void menuUtente(){
+    private void mostraMezziFermiInAzienda() {
+        List<VeicoloPubblico> veicoli = veicoloDAO.ottieniListaVeicoli();
+
+        System.out.println("\nVeicoli fermi in azienda (non in servizio o manutenzione):");
+        for (VeicoloPubblico veicolo : veicoli) {
+            if (!veicolo.isInServizio() && !veicolo.isInManutenzione()) {
+                System.out.println("\nVeicolo: " + veicolo.getTarga());
+            }
+        }
+    }
+
+    private void menuUtente() {
         Tessera tessera = null;
         System.out.println("Hai una tessera della nostra azienda? ");
         System.out.println("1) SI");
         System.out.println("2) NO");
         int scelta;
-        while (true){
+        while (true) {
             scelta = verifyInput();
             if (scelta <= 0 || scelta > 2) System.out.println("Devi inserire 1 o 2");
             else break;
         }
-        if(scelta == 1) {
+        if (scelta == 1) {
             while (true) {
-                System.out.println("Inserisci l'id dell tessera");
+                System.out.println("Inserisci l'id della tessera");
                 String tesseraId = scanner.nextLine();
                 try {
                     tessera = tessereDAO.findTesseraById(tesseraId);
                     break;
-                } catch (NotFoundException e){
+                } catch (NotFoundException e) {
                     System.out.println(e.getMessage());
-                } catch (IllegalArgumentException e){
+                } catch (IllegalArgumentException e) {
                     System.out.println("L'id fornito non è valido");
                 }
             }
         }
-        outerLoop2: while (true) {
+        outerLoop2:
+        while (true) {
             System.out.println("Cosa vuoi fare?");
             System.out.println("1) Compra biglietto");
             System.out.println("2) Compra abbonamento");
@@ -202,12 +341,12 @@ public class MenuInterattivo {
             System.out.println("4) Prendi veicolo pubblico");
             System.out.println("0) Esci");
             int scelta2;
-            while (true){
+            while (true) {
                 scelta2 = verifyInput();
                 if (scelta2 < 0 || scelta2 > 4) System.out.println("Devi inserire un numero tra 0 e 4");
                 else break;
             }
-            switch (scelta2){
+            switch (scelta2) {
                 case 0 -> {
                     System.out.println("Logout da utente");
                     break outerLoop2;
@@ -218,7 +357,7 @@ public class MenuInterattivo {
                     else compraAbbonamento(tessera);
                 }
                 case 3 -> {
-                    if(tessera != null) System.out.println("Hai già fornito una tessera");
+                    if (tessera != null) System.out.println("Hai già fornito una tessera");
                     else tessera = compraTessera();
                 }
                 case 4 -> prendiVeicoloPubblico(tessera);
@@ -226,58 +365,7 @@ public class MenuInterattivo {
         }
     }
 
-    private void prendiVeicoloPubblico(Tessera tessera){
-        System.out.println("Seleziona la tratta: ");
-        List<Tratta> tratte = tratteDao.ottieniListaTratte();
-        if (tratte.isEmpty()) {
-            System.out.println("Fattela a piedi che non ci sono tratte disponibili.");
-            return;
-        }
-        for (int i = 0; i < tratte.size(); i++) {
-            System.out.println((i + 1) + ") " + tratte.get(i).getNomeTratta());
-        }
-        System.out.println("Scegli il numero della tratta: ");
-        int scelta;
-        while (true){
-            scelta = verifyInput();
-            if (scelta < 0 || scelta > tratte.size()) System.out.println("Devi inserire un numero tra 1 e " + (tratte.size()));
-            else break;
-        }
-        Tratta trattaSelezionata = tratte.get(scelta - 1);
-        VeicoloPubblico veicoloPubblico = null;
-        if(trattaSelezionata.getServiziList().stream().noneMatch(servizio -> servizio.getDataFine() == null))
-            System.out.println("Mi dispiace al momento la tratta è scoperta");
-        else {
-            Optional<Servizio> servizioCercato = trattaSelezionata.getServiziList().stream().filter(servizio -> servizio.getDataFine() == null).findFirst();
-            if(servizioCercato.isPresent()) {
-                veicoloPubblico = servizioCercato.get().getVeicoloPubblico();
-            }
-            if (tessera == null) {
-                while (true){
-                    System.out.println("Inserisci l'id del tuo biglietto");
-                    String bigliettoId = scanner.nextLine();
-                    try {
-                        titoloViaggioDao.obliteraBiglietto(bigliettoId, veicoloPubblico);
-                        System.out.println("Buon viaggio");
-                        break;
-                    } catch (IllegalArgumentException e){
-                        System.out.println("L'id fornito non è valido");
-                    } catch (NotFoundException e) {
-                        System.out.println(e.getMessage());
-                    } catch (BigliettoGiaConvalidatoException e){
-                        System.out.println(e.getMessage());
-                        break;
-                    }
-                }
-            } else {
-                if (tessereDAO.verificaValiditaAbbonamento(tessera)) System.out.println("Buon viaggio");
-                else System.out.println("Impossibile salire a bordo, non hai un abbonamento valido");
-            }
-        }
-
-    }
-
-    private Tessera compraTessera(){
+    private Tessera compraTessera() {
         System.out.println("Inserisci nome e cognome");
         String nominativo = scanner.nextLine();
         System.out.println("Inserisci anno di nascita");
@@ -289,18 +377,17 @@ public class MenuInterattivo {
         return tessera;
     }
 
-    private void compraBiglietto(){
+    private void compraBiglietto() {
         PuntoVendita puntoVendita = selezionaPuntoVendita();
         Biglietto biglietto = new Biglietto(2.5, LocalDate.now(), puntoVendita);
         try {
             titoloViaggioDao.salvaTitoloViaggio(biglietto);
-        } catch (DistributoreFuoriServizioException e){
+        } catch (DistributoreFuoriServizioException e) {
             System.out.println(e.getMessage());
         }
-
     }
 
-    private void compraAbbonamento(Tessera tessera){
+    private void compraAbbonamento(Tessera tessera) {
         PuntoVendita puntoVendita = selezionaPuntoVendita();
         System.out.println("Seleziona il tipo di abbonamento:");
         System.out.println("1) Settimanale ");
@@ -308,7 +395,7 @@ public class MenuInterattivo {
         System.out.println("3) Semestrale ");
         System.out.println("4) Annuale ");
         int scelta;
-        while (true){
+        while (true) {
             scelta = verifyInput();
             if (scelta < 0 || scelta > 4) System.out.println("Devi inserire un numero tra 1 e 4");
             else break;
@@ -340,12 +427,12 @@ public class MenuInterattivo {
         System.out.println("1) SI");
         System.out.println("2) NO");
         int scelta2;
-        while (true){
+        while (true) {
             scelta2 = verifyInput();
             if (scelta2 <= 0 || scelta2 > 2) System.out.println("Devi inserire 1 o 2");
             else break;
         }
-        if (scelta2 == 1){
+        if (scelta2 == 1) {
             Abbonamento abbonamento = new Abbonamento(prezzoAbbonamento, LocalDate.now(), puntoVendita, LocalDate.now(), tipoAbbonamento, tessera);
             try {
                 titoloViaggioDao.salvaTitoloViaggio(abbonamento);
@@ -358,34 +445,78 @@ public class MenuInterattivo {
         }
     }
 
-    private void mostraMezziInManutenzione() {
-        List<VeicoloPubblico> veicoli = veicoloDAO.ottieniListaVeicoli();
-
-        System.out.println("\nVeicoli attualmente in manutenzione:");
-        for (VeicoloPubblico veicolo : veicoli) {
-            if (veicolo.isInManutenzione()) {
-                Optional<Manutenzione> manutenzioneAttiva = veicolo.getManutenzionList().stream()
-                        .filter(manutenzione -> manutenzione.getDataFine() == null)
-                        .findFirst();
-
-                if (manutenzioneAttiva.isPresent()) {
-                    System.out.println("\nVeicolo: " + veicolo.getTarga() + " - Tipo Manutenzione: " + manutenzioneAttiva.get().getTipoManutenzione());
-                } else {
-                    System.out.println("\nVeicolo: " + veicolo.getTarga() + " - Manutenzione attiva non trovata.");
+    private void prendiVeicoloPubblico(Tessera tessera) {
+        System.out.println("Seleziona la tratta: ");
+        List<Tratta> tratte = tratteDao.ottieniListaTratte();
+        if (tratte.isEmpty()) {
+            System.out.println("Fattela a piedi che non ci sono tratte disponibili.");
+            return;
+        }
+        for (int i = 0; i < tratte.size(); i++) {
+            System.out.println((i + 1) + ") " + tratte.get(i).getNomeTratta());
+        }
+        System.out.println("Scegli il numero della tratta: ");
+        int scelta;
+        while (true) {
+            scelta = verifyInput();
+            if (scelta < 0 || scelta > tratte.size())
+                System.out.println("Devi inserire un numero tra 1 e " + (tratte.size()));
+            else break;
+        }
+        Tratta trattaSelezionata = tratte.get(scelta - 1);
+        VeicoloPubblico veicoloPubblico = null;
+        if (trattaSelezionata.getServiziList().stream().noneMatch(servizio -> servizio.getDataFine() == null))
+            System.out.println("Mi dispiace, al momento la tratta è scoperta");
+        else {
+            Optional<Servizio> servizioCercato = trattaSelezionata.getServiziList().stream().filter(servizio -> servizio.getDataFine() == null).findFirst();
+            if (servizioCercato.isPresent()) {
+                veicoloPubblico = servizioCercato.get().getVeicoloPubblico();
+            }
+            if (tessera == null) {
+                while (true) {
+                    System.out.println("Inserisci l'id del tuo biglietto");
+                    String bigliettoId = scanner.nextLine();
+                    try {
+                        titoloViaggioDao.obliteraBiglietto(bigliettoId, veicoloPubblico);
+                        System.out.println("Buon viaggio");
+                        break;
+                    } catch (IllegalArgumentException e) {
+                        System.out.println("L'id fornito non è valido");
+                    } catch (NotFoundException e) {
+                        System.out.println(e.getMessage());
+                    } catch (BigliettoGiaConvalidatoException e) {
+                        System.out.println(e.getMessage());
+                        break;
+                    }
                 }
+            } else {
+                if (tessereDAO.verificaValiditaAbbonamento(tessera)) System.out.println("Buon viaggio");
+                else System.out.println("Impossibile salire a bordo, non hai un abbonamento valido");
             }
         }
+
     }
 
-    private void mostraMezziFermiInAzienda() {
-        List<VeicoloPubblico> veicoli = veicoloDAO.ottieniListaVeicoli();
-
-        System.out.println("\nVeicoli fermi in azienda (non in servizio o manutenzione):");
-        for (VeicoloPubblico veicolo : veicoli) {
-            if (!veicolo.isInServizio() && !veicolo.isInManutenzione()) {
-                System.out.println("\nVeicolo: " + veicolo.getTarga());
-            }
+    private PuntoVendita selezionaPuntoVendita() {
+        List<PuntoVendita> puntiVendita = puntoVenditaDAO.ottieniListaPuntiVendita();
+        if (puntiVendita.isEmpty()) {
+            System.out.println("Nessun punto vendita disponibile");
         }
+        System.out.println("Seleziona un punto vendita dall'elenco:");
+        for (int i = 0; i < puntiVendita.size(); i++) {
+            System.out.println((i + 1) + ") " + puntiVendita.get(i).getIndirizzo());
+        }
+        System.out.println("\nScegli il numero del punto vendita:");
+        int scelta;
+        while (true) {
+            scelta = verifyInput();
+            if (scelta <= 0 || scelta > puntiVendita.size())
+                System.out.println("Devi inserire un numero tra 1 e " + (puntiVendita.size()));
+            else break;
+        }
+        PuntoVendita puntoVendita = puntiVendita.get(scelta - 1);
+        System.out.println("Hai scelto il punto vendita: " + puntoVendita.getIndirizzo());
+        return puntoVendita;
     }
 
     private void visualizzaVenditePuntiVendita() {
@@ -494,14 +625,14 @@ public class MenuInterattivo {
         }
     }
 
-    private int verifyInput(){
+    private int verifyInput() {
         int number;
-        while(true){
+        while (true) {
             String input = scanner.nextLine();
             try {
                 number = Integer.parseInt(input);
                 break;
-            } catch (NumberFormatException e){
+            } catch (NumberFormatException e) {
                 System.out.println("Devi inserire un numero");
             }
         }
