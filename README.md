@@ -3,6 +3,7 @@ Gestione parco mezzi e abbonamenti / biglietti
 Descrizione del progetto
 
 Questa applicazione permette la gestione di un parco mezzi e dei relativi abbonamenti o biglietti, con funzionalità CRUD (Creazione, Lettura, Aggiornamento e Cancellazione) per la gestione di mezzi pubblici e delle tratte su cui operano, oltre che per la gestione di utenti e dei loro abbonamenti o biglietti.
+
 Funzionalità principali:
 
 
