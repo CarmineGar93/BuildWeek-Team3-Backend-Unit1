@@ -249,8 +249,9 @@ public class Application {
                 System.out.println("   ");
                 System.out.println("Manutenzioni per il veicolo con targa: " + veicolo.getTarga());
                 for (Manutenzione manutenzione : manutenzioni) {
+                    String dataFineM = manutenzione.getDataFine() == null ? "in corso" : manutenzione.getDataFine().toString();
                     System.out.println(manutenzione.getTipoManutenzione() + " dal "
-                            + manutenzione.getDataInizio() + " al " + manutenzione.getDataFine());
+                            + manutenzione.getDataInizio() + " al " + dataFineM);
                 }
             }
         }
@@ -267,9 +268,9 @@ public class Application {
                 System.out.println("   ");
                 System.out.println("lista dei periodi di servizio per il veicolo con targa: " + veicolo.getTarga());
                 for (Servizio servizio : servizi) {
-                    String dataFine = servizio.getDataFine() == null ? "in corso" : servizio.getDataFine().toString();
+                    String dataFineS = servizio.getDataFine() == null ? "in corso" : servizio.getDataFine().toString();
                     System.out.println(servizio.getServizio_id() + " dal "
-                            + servizio.getDataInizio() + " al " + dataFine);
+                            + servizio.getDataInizio() + " al " + dataFineS);
                 }
             }
         }
@@ -300,9 +301,9 @@ public class Application {
                 System.out.println("Il veicolo con targa: " + veicolo.getTarga() + " non è attualmente in manutenzione.");
             } else {
                 System.out.println("   ");
-                System.out.println("Il veicolo con targa: " + veicolo.getTarga() + "è attualmente in manutenzione" );
+                System.out.println("Il veicolo con targa: " + veicolo.getTarga() + " è attualmente in manutenzione" );
                 for (Manutenzione manutenzione : manutenzioniAttuali) {
-                    System.out.println("Manutenzione: " + manutenzione.getTipoManutenzione() + " con ID" + manutenzione.getManutenzioneId() + " iniziato il "
+                    System.out.println("Manutenzione: " + manutenzione.getTipoManutenzione() + " con ID: " + manutenzione.getManutenzioneId() + " iniziato il "
                             + manutenzione.getDataInizio() + ", in corso.");
                 }
             }
