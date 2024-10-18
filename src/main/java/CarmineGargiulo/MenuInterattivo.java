@@ -96,7 +96,12 @@ public class MenuInterattivo {
 
     private void mettiFuoriServizio(){
         VeicoloPubblico veicoloPubblico = selezioneVeicolo();
-        servizioDao.mettiFuoriServizio(veicoloPubblico);
+        try {
+            servizioDao.mettiFuoriServizio(veicoloPubblico);
+        } catch (ManutenzioneOrServizioException e) {
+            System.out.println(e.getMessage());
+        }
+
     }
 
     private void mettiManutenzione(){
@@ -125,7 +130,12 @@ public class MenuInterattivo {
 
     private void terminaManutenzione(){
         VeicoloPubblico veicoloPubblico = selezioneVeicolo();
-        manutenzioneDao.terminaManutenzione(veicoloPubblico);
+        try {
+            manutenzioneDao.terminaManutenzione(veicoloPubblico);
+        } catch (ManutenzioneOrServizioException e){
+            System.out.println(e.getMessage());
+        }
+
     }
 
     private void mettiInServizio(){
