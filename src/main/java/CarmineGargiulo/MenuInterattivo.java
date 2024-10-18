@@ -83,7 +83,9 @@ public class MenuInterattivo {
     private VeicoloPubblico selezioneVeicolo(){
         List<VeicoloPubblico> veicoli = veicoloDAO.ottieniListaVeicoli();
         System.out.println("Scegli un veicolo");
-        veicoli.forEach(veicoloPubblico -> System.out.println(veicoloPubblico.getTarga()));
+        for (int i = 1; i < veicoli.size(); i++) {
+            System.out.println(i + ") " + veicoli.get(i - 1).getTarga());
+        }
         int scelta;
         while (true){
             scelta = verifyInput();
