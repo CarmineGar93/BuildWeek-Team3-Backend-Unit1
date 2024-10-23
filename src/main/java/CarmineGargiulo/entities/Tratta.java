@@ -22,8 +22,7 @@ public class Tratta {
     private String puntoArrivo;
     @Column(name = "tempo_medio_percorrenza")
     private int tempoMedioPercorrenza;
-    @OneToMany(mappedBy = "tratta")
-    @Cascade(org.hibernate.annotations.CascadeType.ALL)
+    @OneToMany(mappedBy = "tratta", cascade = CascadeType.ALL)
     private List<Servizio> serviziList;
 
     public Tratta() {

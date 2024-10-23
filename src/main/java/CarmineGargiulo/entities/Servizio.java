@@ -20,9 +20,8 @@ public class Servizio {
     @ManyToOne
     @JoinColumn(name = "veicolo_id")
     private VeicoloPubblico veicoloPubblico;
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "tratta_id")
-    @Cascade(org.hibernate.annotations.CascadeType.ALL)
     private Tratta tratta;
 
     public Servizio() {
