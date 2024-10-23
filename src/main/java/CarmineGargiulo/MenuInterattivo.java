@@ -187,6 +187,7 @@ public class MenuInterattivo {
             System.out.println("Le tratte scoperte sono: ");
             tratteScoperte.forEach(System.out::println);
         }
+        tratteScoperte.clear();
     }
 
     private void sottoscelteControlloMezzi() {

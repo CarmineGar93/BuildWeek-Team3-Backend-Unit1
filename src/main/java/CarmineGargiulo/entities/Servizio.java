@@ -1,6 +1,7 @@
 package CarmineGargiulo.entities;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.Cascade;
 
 import java.time.LocalDate;
 import java.util.UUID;
@@ -21,6 +22,7 @@ public class Servizio {
     private VeicoloPubblico veicoloPubblico;
     @ManyToOne
     @JoinColumn(name = "tratta_id")
+    @Cascade(org.hibernate.annotations.CascadeType.ALL)
     private Tratta tratta;
 
     public Servizio() {

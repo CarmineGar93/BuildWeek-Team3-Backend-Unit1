@@ -1,6 +1,7 @@
 package CarmineGargiulo.entities;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.Cascade;
 
 import java.util.List;
 import java.util.UUID;
@@ -22,6 +23,7 @@ public class Tratta {
     @Column(name = "tempo_medio_percorrenza")
     private int tempoMedioPercorrenza;
     @OneToMany(mappedBy = "tratta")
+    @Cascade(org.hibernate.annotations.CascadeType.ALL)
     private List<Servizio> serviziList;
 
     public Tratta() {
