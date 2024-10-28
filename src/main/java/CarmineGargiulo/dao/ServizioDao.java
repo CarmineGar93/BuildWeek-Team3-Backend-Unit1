@@ -60,15 +60,10 @@ public class ServizioDao {
         if(tratta.getServiziList().stream().anyMatch(servizio1 -> servizio1.getDataFine() == null)) throw new TrattaGiaPercorsaException();
         veicoloPubblico.setInServizio(true);
         Servizio servizio = new Servizio(veicoloPubblico, tratta);
-        /*tratta.getServiziList().add(servizio);*/
         EntityTransaction transaction = entityManager.getTransaction();
         transaction.begin();
         entityManager.persist(servizio);
         transaction.commit();
-        EntityTransaction transaction2 = entityManager.getTransaction();
-        transaction2.begin();
-        entityManager.refresh(tratta);
-        transaction2.commit();
         System.out.println("Il servizio " + servizio.getServizio_id() + " è stato salvato correttamente.");
     }
 

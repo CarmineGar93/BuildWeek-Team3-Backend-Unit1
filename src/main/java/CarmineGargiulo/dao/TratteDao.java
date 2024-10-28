@@ -2,6 +2,7 @@ package CarmineGargiulo.dao;
 
 import CarmineGargiulo.entities.PuntoVendita;
 import CarmineGargiulo.entities.Tratta;
+import CarmineGargiulo.exceptions.EmptyListException;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.TypedQuery;
@@ -36,9 +37,11 @@ public class TratteDao {
         return query.getResultList();
     }
 
-   /* public List<Tratta> ottieniTratteScoperte(){
-        *//*TypedQuery<Tratta> query = entityManager.createQuery("SELECT t FROM Tratta t JOIN Servizio s WHERE s.dataFine IS NULL");*//*
-    }*/
-
+    public List<Tratta> ottieniTratteScoperte(){
+        TypedQuery<Tratta> query = entityManager.createQuery("SELECT t FROM Tratta t WHERE NOT EXISTS (SELECT s FROM Servizio s WHERE s.tratta = t AND s.dataFine IS NULL)", Tratta.class);
+        List<Tratta> result = query.getResultList();
+        if(result.isEmpty()) throw new EmptyListException();
+        return result;
+    }
 }
 

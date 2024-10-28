@@ -84,6 +84,7 @@ public class MenuInterattivo {
         }
     }
 
+
     private void numeroManutenzioniServizi(){
         VeicoloPubblico veicoloPubblico = selezioneVeicolo();
         System.out.println("Il numero di servizi del veicolo " + veicoloPubblico.getTarga() + " è di: " + servizioDao.contaServiziPerVeicolo(veicoloPubblico));
@@ -176,18 +177,13 @@ public class MenuInterattivo {
     }
 
     private void tratteScoperte(){
-        List<Tratta> tratteList = tratteDao.ottieniListaTratte();
-        List<Tratta> tratteScoperte = new ArrayList<>();
-        for (Tratta tratta : tratteList) {
-            if (tratta.getServiziList().stream().noneMatch(servizio -> servizio.getDataFine() == null))
-                tratteScoperte.add(tratta);
-        }
-        if (tratteScoperte.isEmpty()) System.out.println("Non ci sono tratte scoperte");
-        else {
+        try {
+            List<Tratta> tratteScoperte = tratteDao.ottieniTratteScoperte();
             System.out.println("Le tratte scoperte sono: ");
             tratteScoperte.forEach(System.out::println);
+        } catch (EmptyListException e) {
+            System.out.println("Al momento non ci sono tratte scoperte ");
         }
-        tratteScoperte.clear();
     }
 
     private void sottoscelteControlloMezzi() {
